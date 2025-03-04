@@ -8,6 +8,9 @@ import DatatableComponent from './components/DatatableComponent.vue';
 import TestComponent from './components/TestComponent.vue';
 import BarChartComponent from './components/BarChartComponent.vue';
 import PieChartComponent from './components/PieChartComponent.vue';
+import CommunicationComponent from './components/CommunicationComponent.vue';
+import OrganizationLocationComponent from './components/form/OrganizationLocationComponent.vue';
+import CascadingDropdownComponent from './components/form/CascadingDropdownComponent.vue';
 
 //import Vue3EasyDataTable from 'vue3-easy-data-table';
 //import Vue3EasyDataTable from './components/Vue3EasyDataTable.vue';
@@ -26,11 +29,12 @@ import 'vue3-easy-data-table/dist/style.css'; // Importez les styles de vue3-eas
 
 
 const app = createApp({
+
     data() {
         return {
             message: 'Mon message'
         }
-    }
+    },
 });
 
 
@@ -38,6 +42,9 @@ const app = createApp({
 app.component('test-component', TestComponent);
 app.component('bar-chart', BarChartComponent);
 app.component('pie-chart', PieChartComponent);
+app.component('communication', CommunicationComponent);
+app.component('organization-location', OrganizationLocationComponent);
+app.component('cascading-dropdown', CascadingDropdownComponent);
 //app.component('vue-datatable', Vue3EasyDataTable);
 app.component('datatable-component', DatatableComponent);
 app.component('ticket-list', TicketList);
@@ -49,4 +56,7 @@ app.component('location',LocationList);
 //app.component('dashboard-tickets', basic);
 
 
-app.mount('#app');
+const vueInstance = app.mount('#app');
+
+// Rendre l'instance accessible depuis `window` pour y accéder via jQuery
+window.vueInstance = vueInstance;

@@ -23,7 +23,7 @@
              </div>
          </div>
          <div class="row">
-             <div class="col-sm-6">
+             <div class="col-sm-4">
                  <div class="form-group">
                      <label>{{__('Phone')}}</label>
                      <div class="input-group">
@@ -35,7 +35,7 @@
                      <!-- /.input group -->
                  </div>
              </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                  <div class="form-group">
                      <label>{{__('Mobile Phone')}}</label>
                      <div class="input-group">
@@ -47,12 +47,27 @@
                      <!-- /.input group -->
                  </div>
              </div>
+             <div class="col-sm-4">
+                 <div class="form-group">
+                     <label>{{__('Gender')}}</label>
+                     <div class="input-group">
+                         <div class="input-group-prepend">
+                             <span class="input-group-text"><i class="fas fa-venus-mars"></i></i></span>
+                         </div>
+                         <select name="gender" id="gender" class="form-control">
+                             <option value="M" @if ($user->gender =='M') selected @endif>{{__('Male')}}</option>
+                             <option value="F" @if ($user->gender =='F') selected @endif>{{__('Female')}}</option>
+                         </select>
+                     </div>
+                     <!-- /.input group -->
+                 </div>
+             </div>
 
          </div>
 
      <div class="row">
 
-            <div class="col-sm-6">
+            <div class="col-sm-8">
                  <div class="form-group danger">
                      <label>{{__('Email')}}</label>
                      <div class="input-group">
@@ -68,19 +83,13 @@
                      <!-- /.input group -->
                  </div>
              </div>
-             <div class="col-sm-6">
-                 <div class="form-group">
-                     <label>{{__('Gender')}}</label>
-                     <div class="input-group">
-                         <div class="input-group-prepend">
-                             <span class="input-group-text"><i class="fas fa-venus-mars"></i></i></span>
-                         </div>
-                         <select name="gender" id="gender" class="form-control">
-                             <option value="M" @if ($user->gender =='M') selected @endif>{{__('Male')}}</option>
-                             <option value="F" @if ($user->gender =='F') selected @endif>{{__('Female')}}</option>
-                         </select>
-                     </div>
-                     <!-- /.input group -->
+             <div class="col-sm-4">
+                 <label>&nbsp;</label>
+                 <div class="input-group">
+                     <!-- Bouton pour ouvrir la modale -->
+                     <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#changePasswordModal">
+                         <i class="fas fa-key"></i> {{ __('Change your password') }}
+                     </button>
                  </div>
              </div>
          </div>
@@ -94,3 +103,5 @@
   </div>
 {{--    <button type="submit" class="btn btn-primary float-right">Valider</button>--}}
 {{--</form>--}}
+
+

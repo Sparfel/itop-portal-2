@@ -23,29 +23,68 @@ class ClosedRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ClosedRequestsDataTable $dataTable)
+//    public function index(ClosedRequestsDataTable $dataTable)
+    public function index(ItopWebserviceRepository $itopWS, Request $request)
     {
-//        $itopWS = new ItopWebserviceRepository();
-//        $datas = $itopWS->getListClosedRequest();
-//        $parsed_json= json_decode($datas,false);
-//        $objects = $parsed_json->{'objects'};
-//        $Colldatas =  new Collection;
-//        foreach ($objects as $object){
-//            $Colldatas->push($object->fields);
-//
-//        dd($Colldatas);
-//    }
-//        $pref = session('preferences');
-//        dd($pref->userFilter);
+
+        $itopWS = new ItopWebserviceRepository();
+        $datas = $itopWS->getListClosedRequest();
+        $parsedJson= json_decode($datas,false);
+        $collection = collect();
+        // Vérifie que $parsedJson est un objet et que 'objects' existe
+        if (is_object($parsedJson) && property_exists($parsedJson, 'objects') && !is_null($parsedJson->objects)) {
+            $objects = $parsedJson->objects;
+            foreach ($objects as $object) {
+                if (property_exists($object, 'fields')) {
+                    $collection->push($object->fields);
+                }
+            }
+        } else {
+            // Gère les cas où 'objects' est absent ou $parsedJson est null
+            $objects = [];
+            //Auquel cas on affiche une page spécifique vide !
+        }
+        // $collection contient maintenant les objets souhaités
+        $totalTickets = $collection->count();
+        // Récupérer les filtres depuis la requête
+        $filters = [
+            'priority' => $request->priority,
+            'request_type' => $request->request_type,
+            'resolution_code' => $request->get('resolution_code'),
+        ];
+        // Appliquer chaque filtre de manière dynamique
+        foreach ($filters as $key => $value) {
+            if ($value && $value !== 'all') {
+                $collection = $collection->filter(function ($item) use ($key, $value) {
+                    // Vérifier si la valeur est 'undefined' et que le champ est null
+                    if ($value === 'undefined' && is_null($item->$key)) {
+                        return true;
+                    }
+                    // Sinon, vérifier si la valeur du champ correspond à la valeur du filtre
+                    return isset($item->$key) && $item->$key == $value;
+                });
+            }
+        }
+        //Données pour les statistiques
+        $requestsByType = $collection->groupBy('request_type')->map->count();
+        $requestsByPriority = $collection->groupBy('priority')->map->count();
+        $requestsByResolutioncode = $collection->groupBy('resolution_code')->map->count();
+        $pie_labels = response()->json($requestsByResolutioncode->keys()); // Les labels (ex: 'new', 'assigned', etc.)
+        $pie_data = response()->json($requestsByResolutioncode->values()); // Les valeurs (ex: 14, 10, etc.)
+
+        $dataTable = new ClosedRequestsDataTable($collection);
 
 
         $pref = session('preferences');
-        $locations = $pref->locations_list;
-//        $locations_filter =json_decode($pref->getLocationFilter(),true);
-        $locations_filter = $pref->getLocationFilter()->toArray();
-        $user_filter_closed = $pref->getUserFilterClosedRequest();
+//        $locations = $pref->locations_list;
+////        $locations_filter =json_decode($pref->getLocationFilter(),true);
+//        $locations_filter = $pref->getLocationFilter()->toArray();
+//        $user_filter_closed = $pref->getUserFilterClosedRequest();
 
-        return $dataTable->render('frontend.request.closedrequest.list',compact('locations','locations_filter','user_filter_closed'));
+        return $dataTable->render('frontend.request.closedrequest.index',
+            /*compact('locations','locations_filter','user_filter_closed')*/
+                compact('totalTickets','requestsByResolutioncode','requestsByPriority','requestsByType',
+                    'pie_labels','pie_data'));
     }
 
     /**

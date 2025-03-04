@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\User as User;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 Class LocalAccount implements ItopUser {
 
@@ -15,22 +16,24 @@ Class LocalAccount implements ItopUser {
 
 
 	public function __construct($userAccount){
-		//echo $userAccount->LdapUser->email.' - '.$userAccount->itopContact;
-		//error_log(htmlspecialchars_decode (Zend_Debug::dump($userAccount->itopId,' 2 - LocalAccount')),3,"/var/tmp/mes-erreurs.log");
-        Log::debug('2 - LocalAccount (itopId='.$userAccount->itopId.'), LocalAccount?'.$userAccount->localAccount);
+		Log::debug('2 - LocalAccount (itopId='.$userAccount->itopId.'), LocalAccount?'.$userAccount->localAccount);
 		$this->userAccount = $userAccount;
-		//if ($userAccount->LdapUser->email == 'luke.skywalker@fivesgroup.com') // A virer, pour test seulement
-		{
-			if ($userAccount->localAccount == 'KO') { //Si pas de compte local, on le créé
 
-				if ($this->createAccount())
-				{$this->next($this->userAccount);}
-				else {$this->prev($this->userAccount);}
-
-			}
-
-			else {$this->next($this->userAccount);}
-		}
+        try {
+            if ($userAccount->localAccount == 'KO') {
+                if ($this->createAccount()) {
+                    $this->next($this->userAccount);
+                } else {
+                    $this->prev($this->userAccount);
+                }
+            } else {
+                $this->next($this->userAccount);
+            }
+//        } catch (UserCreationException $e) {
+        } catch (\Exception $e) {
+            Log::error("Erreur dans LocalAccount : " . $e->getMessage());
+            throw $e; // Relancer pour que le contrôleur AJAX puisse capturer l'erreur
+        }
 	}
 
 
@@ -57,15 +60,11 @@ Class LocalAccount implements ItopUser {
 		null;
 	}
 
-
-
 	public function getState(){
 		return $this;
 	}
 
-
 	public function validState(){
-
 	}
 
 	public function doTheJob($options){
@@ -75,19 +74,13 @@ Class LocalAccount implements ItopUser {
 	private function createAccount(){
 		$ItopUser = $this->userAccount->ItopUser;
 		//On va tenter de créer le compte local
-
 		$etape = 'Account creation';
         Log::info($etape);
 		// On crée ensuite l'enregistrement le user local (table auth_user)
-		//$user = new Auth_Model_DbTable_User();
-        //$user =new User();
-		//Détermination du password par défaut
-		//Le Username sera désormais l'adresse mail, résoud le soucis d'unicité entre les 3 AD
+		//Le Username sera désormais l'adresse mail
 		$username = $ItopUser->login;
-		$salt = $this->getSalt($username);
-        //Log::debug('$ItopUser '.print_r($ItopUser, true));
-//		$itopUser = new UserLocal();
-		$password =  Str::random(3).''.rand( 1000, 9999 );
+        $this->userAccount->password =  $this->generateSecurePassword(8);
+//        \Log::debug($this->userAccount->password);
 		$data = array ('username' => $username,
 				'name' => $ItopUser->first_name.' '.$ItopUser->last_name,
 				'first_name' => $ItopUser->first_name,
@@ -95,63 +88,58 @@ Class LocalAccount implements ItopUser {
 				'email' => $ItopUser->email,
 				'is_active' => 1,
 				'is_staff' => 0, // is_staff à OFF car on créé ici des comptes client
-				'itop_cfg'=> 1, //iTop de production par défaut
+				'itop_cfg'=> 0, //iTop de production par défaut
 				'itop_id' => $ItopUser->itop_id,
-				'password' => Hash::make($password),
-				'guid' => $password, // usage détourné du GUID de l'AD, ici compte local uniquement, on y stocke le mot de passe temporaire (initial)
+				'password' => Hash::make($this->userAccount->password),
+				'guid' => $this->userAccount->password, // usage détourné du GUID de l'AD, ici compte local uniquement, on y stocke le mot de passe temporaire (initial)
 				'domain' => null, // il s'agit d'un compte local, on ne précise rien ici
-                'role_id' => 2, // à déterminer de façon plus sioux peut-être ?
+//                'role_id' => 2, // à déterminer de façon plus sioux peut-être ?
                 'org_id' => $ItopUser->org_id,
                 'loc_id' => $ItopUser->location_id
 		);
 
-		//error_log(htmlspecialchars_decode (Zend_Debug::dump($data,'Data')),3,"/var/tmp/mes-erreurs.log");
 		//Insertion dans la DB
 		try {
             Log::debug('Creation User Local '.print_r($data, true));
             //User::insert($data);
             $User = new User($data);
             $User->save();
-            //$User->insert($data);
             //Log::debug('$User: '.$User);
-            $pk = $User->getId();
-            //Log::debug('PK: '.$pk);
-//			$pk = $user->insert($data);
-//			$ItopUser->setPortalUserId($pk);
-//			//On gère ensuite les autorisations
-//			//Zend_Debug::dump($pk);
-//			$belong = new Auth_Model_DbTable_Belong();
-//			$data = array('user_id' => $pk,
-//					'group_id' => $this->Default_group);
-//			$belong->insert($data);
-//			//Puis le profile
-//			$profile = new User_Model_DbTable_Profile();
-//			$data = array('user_id' => $pk,
-//					'nickname' => $username,
-//					'department' => $ItopUser->org_name,
-//					'service' =>  $ItopUser->location_name
-//			);
-//			$profile->insert($data);
-//			//Maj des données origines dans la table des imports => le compte a été créé
-//			$ItopUser->group_id = $this->Default_group; // Groupe utilisateur par défaut
-			$ItopUser->is_local = 1;
-            $ItopUser->portal_id = $pk;
+            // Gestion des rôles, si pas spécifié, alors on lui assigne le rôle 2 (User)
+            // Définir le rôle de l'utilisateur (utiliser role_id s'il est défini, sinon 2)
+            $roleId = $ItopUser->role_id ?? 2;
+            // Récupérer le rôle Spatie correspondant
+            $role = Role::find($roleId);
+            if ($role) {
+                // Assigner le rôle à l'utilisateur avec l'ID $pk
+                $User->assignRole($role);
+            }
+            $ItopUser->is_local = 1;
+
+            $ItopUser->portal_id = $User->id;
 			$ItopUser->save();
 			$this->userAccount->localAccount = 'OK';
-			//$pk = 999999;
-			$this->userAccount->portalId = $pk;
+			$this->userAccount->portalId = $User->id;
 			return true;
 		} catch (\Exception $e) {
-			//error_log(htmlspecialchars_decode ($e),3,"/var/tmp/mes-erreurs.log");
-            Log::error($e);
-			$ItopUser->error = 'Exception lors de l\'insertion du User Local. '.htmlspecialchars_decode ($e);
-			$ItopUser->save();
-			return false;
+            Log::error('Erreur lors de la création de l’utilisateur : ' . $e->getMessage());
+            // Lever une exception spécifique pour être captée par les classes appelantes
+//            throw new UserCreationException("Erreur lors de la création du compte : " . $e->getMessage());
+            throw new \Exception("Erreur lors de la création du compte : " . $e->getMessage());
 		}
-
 	}
+    private function generateSecurePassword($length = 12) {
+        $uppercase = Str::random(1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'); // 1 majuscule
+        $lowercase = Str::random(1, 'abcdefghijklmnopqrstuvwxyz'); // 1 minuscule
+        $number = Str::random(1, '0123456789'); // 1 chiffre
+        // Liste des caractères spéciaux
+        $specialChars = '!@#$%^&*()-_=+';
+        $special = $specialChars[random_int(0, strlen($specialChars) - 1)]; // 1 caractère spécial
+        $remaining = Str::random($length - 4); // Reste des caractères aléatoires
 
-	private function getSalt($username){
-		return  md5(rand(100000, 999999). $username);
-	}
+        // Mélanger les caractères pour éviter une prévisibilité
+        $password = str_shuffle($uppercase . $lowercase . $number . $special . $remaining);
+
+        return $password;
+    }
 }

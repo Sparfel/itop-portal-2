@@ -26,9 +26,9 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function test()
     {
-        return view('home');
+        return view('test');
     }
 
     public function dashboard()
@@ -37,56 +37,35 @@ class HomeController extends Controller
         $iTop = $itopWS->getiTopVersion()->first();
         $datas = $itopWS->getListRequest4Component("status !='closed'");
 //
-//        // Convertir les objets stdClass en tableaux associatifs
-        $arrayData = $datas->map(function ($item) {
-            return (array)$item;
-        });
+        if (is_null($datas)) {
+            $arrayData = collect();
+            $requestsByType = collect();
+            $bar_tab = ['labels' => [], 'datas' => []];
+            } else {
+            // Convertit les objets stdClass en tableaux associatifs
+            $arrayData = $datas->map(function ($item) {
+                return (array)$item;
+            });
+            $requestsByType = $arrayData->groupBy('request_type')->map->count();
+            //Données pour la graphe à barres.
+            $bar_tab = $this->getBarDatas($datas);
+        }
 
-        $requestsByType = $arrayData->groupBy('request_type')->map->count();
-//        dump($requestsByType);
-
-//
-//        // Extraire les en-têtes (clés du premier élément)
-//        $tableHeaders1 = $arrayData->first() ? array_keys($arrayData->first()) : [];
-//
-//        // Extraire les données
-//        $tableDatas1 = $arrayData->map(function ($item) {
-//            return array_values($item);
-//        })->toArray();
-//
-//        // Extraire les en-têtes (clés du premier élément) et les transformer en format structuré
-//        $tableHeaders = collect(array_keys($arrayData->first() ?? []))->map(function ($key) {
-//            return [
-//                'text' => ucfirst(str_replace('_', ' ', $key)), // Transformation en texte lisible
-//                'value' => $key,
-//                'sortable' => in_array($key, ['ref', 'id']), // Exemple pour rendre certaines colonnes triables
-//            ];
-//        })->toArray();
-//
-//
-//        $tableDatas = $datas->map(function ($item) {
-//            return (array) $item;
-//        });
-//        //**
-////        dump(json_encode($tableHeaders));
-////        dump(json_encode($tableDatas));
-//
-//        //gestion du BarChart
-//         //On liste les tickets que l'on veut
-//        //$datas = $itopWS->getCountRequest("status !='closed'");
-//        $datas = $itopWS->getCountRequest(); // on prend tous les tickets de l'organisation
-//        //$datatable_datas = response()->json($datas);
-
-        //Données pour la graphe à barres.
-        $bar_tab = $this->getBarDatas($datas);
 //        dd($bar_tab);
         $bar_labels = response()->json($bar_tab['labels']);
         $bar_datas = response()->json($bar_tab['datas']);
 
-
         return view('frontend.home.dashboard',compact('iTop',//'tableHeaders', 'tableDatas','tableHeaders1', 'tableDatas1',
                                                 'bar_labels','bar_datas',
                                                             'requestsByType'));
+    }
+
+    function getCommunications() {
+        $itopWS = new ItopWebserviceRepository();
+        $Communications = $itopWS->getCommunication();
+        //dd($Communications);
+
+        return response()->json($Communications);
     }
 
 

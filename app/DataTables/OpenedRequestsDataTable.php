@@ -119,26 +119,33 @@ class OpenedRequestsDataTable extends DataTable
         return $this->builder()
             ->setTableId('openedrequests-table')
             ->columns($this->getColumns())
-            //->minifiedAjax()
             ->dom("<'row'<'col-sm-6'B><'col-sm-2 text-center'l><'col-sm-4'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-6'i><'col-sm-6'p>>")
             ->orderBy(1,'desc')
             ->colReorder(true)
             ->stateSave(true)
             ->stateDuration(0)
             ->lengthMenu([[25,100, 200, 400, -1], [25,100, 200, 400, 'All']])
-            ->parameters(  ['responsive' => true,
-                'autoWidth' => false])
+            ->parameters(['responsive' => true, 'autoWidth' => false])
             ->buttons(
-            //Button::make('create'),
-                Button::make(array('extend'=>'export', 'text'=>'<i class="fa fa-download"></i> '.__('Export'))),
-                Button::make(array('extend'=>'print', 'text'=>'<i class="fas fa-print"></i> '.__('Print'))),
-                Button::make(array('extend'=>'reload', 'text'=>'<i class="fas fa-redo"></i> '.__('Reload'))),
-                Button::make(array('extend'=>'colvis', 'text'=>'<i class="fas fa-eye"></i> '.__('Column visibility')))
-            //Button::make('reset'),
-
-
+                Button::make([
+                    'text' => '<i class="fas fa-download"></i> ' . __('Export'),
+                    'extend' => 'collection',
+                    'buttons' => [
+                        Button::make(['extend' => 'copy', 'text' => '<i class="fas fa-copy"></i> ' . __('Copy')]),
+                        Button::make(['extend' => 'csv', 'text' => '<i class="fas fa-file-csv"></i> ' . __('CSV')]),
+                        Button::make(['extend' => 'excel', 'text' => '<i class="fas fa-file-excel"></i> ' . __('Excel')]),
+                        Button::make(['extend' => 'pdf', 'text' => '<i class="fas fa-file-pdf"></i> ' . __('PDF')]),
+                    ]
+                ]),
+                Button::make([
+                    'text' => '<i class="fas fa-redo"></i> ' . __('Reload'),
+                    'action' => 'function(e, dt, node, config) { dt.ajax.reload(); }'
+                ]),
+                Button::make(['extend' => 'colvis', 'text' => '<i class="fas fa-eye"></i> ' . __('Column visibility')])
             );
+
     }
+
 
     /**
      * Get columns.

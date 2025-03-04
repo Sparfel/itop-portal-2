@@ -17,8 +17,6 @@ Class ImportUser implements ItopUser{
 
 		$this->userAccount = $userAccount;
 		//dd($userAccount->itopId);
-
-//		error_log(htmlspecialchars_decode (Zend_Debug::dump($userAccount->itopId,' 1 - ImportUser')),3,"/var/tmp/mes-erreurs.log");
         Log::debug('1 - ImportUser');
 	}
 
@@ -49,7 +47,6 @@ Class ImportUser implements ItopUser{
 	public function getState(){
 		return $this;
 	}
-
 
 	public function validState(){
 

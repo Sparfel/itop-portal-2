@@ -12,12 +12,12 @@
         @endisset
 
         {{-- Text --}}
-        {{ $item['text'] }}
+        {{ __($item['text']) }}
 
         {{-- Label (optional) --}}
         @isset($item['label'])
             <span class="badge badge-{{ $item['label_color'] ?? 'primary' }}">
-                {{ $item['label'] }}
+                {{ __($item['label']) }}
             </span>
         @endisset
 

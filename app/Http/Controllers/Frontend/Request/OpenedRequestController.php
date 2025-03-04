@@ -32,48 +32,32 @@ class OpenedRequestController extends Controller
     {
         // Récupérer les données via le WebService
         $datas = $itopWS->getListOpenedRequest();
+        // Décoder les données JSON
         $parsedJson = json_decode($datas, false);
-        $objects = $parsedJson->{'objects'};
-        $collection = new Collection();
-        foreach ($objects as $object) {
-            $collection->push($object->fields);
+        // Initialiser la collection
+        $collection = collect();
+        // Vérifie que $parsedJson est un objet et que 'objects' existe
+        if (is_object($parsedJson) && property_exists($parsedJson, 'objects') && !is_null($parsedJson->objects)) {
+            $objects = $parsedJson->objects;
+            foreach ($objects as $object) {
+                if (property_exists($object, 'fields')) {
+                    $collection->push($object->fields);
+                }
+            }
+        } else {
+            // Gère les cas où 'objects' est absent ou $parsedJson est null
+            $objects = [];
+            //Auquel cas on affiche une page spécifique vide !
         }
-//dd($collection);
+        // $collection contient maintenant les objets souhaités
         $totalTickets = $collection->count();
-
-
-//        // Si Filtre
-//        if (isset($request->priority) && $request->priority != 'all'){
-//            $priority = $request->priority;
-//
-//            $filteredCollection = $collection->filter(function ($item) use ($priority) {
-//                return isset($item->priority) && $item->priority == $priority;
-//            });
-//            // Passer les données à la DataTable
-//            $dataTable = new OpenedRequestsDataTable($filteredCollection);
-//        }
-//        else if (isset($request->type)) {
-//            $priority = $request->priority;
-//            $filteredCollection = $collection->filter(function ($item) use ($priority) {
-//                return isset($item->priority) && $item->priority == $priority;
-//            });
-//            // Passer les données à la DataTable
-//            $dataTable = new OpenedRequestsDataTable($filteredCollection);
-//        }
-//        else { // Pas de filtre
-//            // Passer les données à la DataTable
-//            $dataTable = new OpenedRequestsDataTable($collection);
-//        }
-
         //on applique les filtres
         // Récupérer les filtres depuis la requête
         $filters = [
             'priority' => $request->priority,
-            'request_type' => $request->request_type//,
-            //'status' => $request->get('status'),
+            'request_type' => $request->request_type,
+            'status' => $request->get('status'),
         ];
-        //dd($filters);
-        \Log::debug($filters);
         // Appliquer chaque filtre de manière dynamique
         foreach ($filters as $key => $value) {
             if ($value && $value !== 'all') {
@@ -85,10 +69,8 @@ class OpenedRequestController extends Controller
                     // Sinon, vérifier si la valeur du champ correspond à la valeur du filtre
                     return isset($item->$key) && $item->$key == $value;
                 });
-                \Log::debug($collection);
             }
         }
-
         // AVANT Eventuels filtres !
         //Récupération de données annexes
         $pref = session('preferences');
@@ -97,63 +79,62 @@ class OpenedRequestController extends Controller
         $user_filter = $pref->getUserFilter();
 
         //Données pour les statistiques
-//        $totalTickets = $collection->count();
+        //$totalTickets = $collection->count();
         $requestsByType = $collection->groupBy('request_type')->map->count();
         //dd($requestsByType);
         $requestsByStatus = $collection->groupBy('status')->map->count();
-        \Log::debug($requestsByType);
+//        \Log::debug($collection->count());
         //Critical (1), High (2), Medium (3), Low (4)
         $requestsByPriority = $collection->groupBy('priority')->map->count();
-//        dd($requestsByPriority);
+        //dd($requestsByPriority);
         $pie_labels = response()->json($requestsByStatus->keys()); // Les labels (ex: 'new', 'assigned', etc.)
         $pie_data = response()->json($requestsByStatus->values()); // Les valeurs (ex: 14, 10, etc.)
-
+//        \Log::debug(json_encode($pie_labels->getData()));
         // Passer les données filtrées à la DataTable
         $dataTable = new OpenedRequestsDataTable($collection);
 
         // Retourner la vue
-//        return view('frontend.request.openedrequest.list2', compact('dataTable'));
-        return $dataTable->render('frontend.request.openedrequest.list2',
+        return $dataTable->render('frontend.request.openedrequest.index',
             compact('locations','locations_filter','user_filter',
                 'totalTickets','requestsByPriority','requestsByStatus','requestsByType',
                 'pie_labels','pie_data'));
     }
 
-    public function index2(OpenedRequestsDataTable $dataTable,$priority = null)
-//    public function index()
-    {
-
-//        $itopWS = new ItopWebserviceRepository();
-//        $collection = $dataTable->query($itopWS);
-//        //$collection = $dataTable->getData();
-//        //dd($collection);
-//        $totalTickets = $collection->count();
-//        $requestsByType = $collection->groupBy('request_type')->map->count();
-//        //dd($requestsByType);
-//        $requestsByStatus = $collection->groupBy('status')->map->count();
-//        $pie_labels = response()->json($requestsByStatus->keys()); // Les labels (ex: 'new', 'assigned', etc.)
-//        $pie_data = response()->json($requestsByStatus->values()); // Les valeurs (ex: 14, 10, etc.)
+//    public function index2(OpenedRequestsDataTable $dataTable,$priority = null)
+////    public function index()
+//    {
 //
-//        //Critical (1), High (2), Medium (3), Low (4)
-//        $requestsByPriority =  $collection->where('priority', 1)->count();
+////        $itopWS = new ItopWebserviceRepository();
+////        $collection = $dataTable->query($itopWS);
+////        //$collection = $dataTable->getData();
+////        //dd($collection);
+////        $totalTickets = $collection->count();
+////        $requestsByType = $collection->groupBy('request_type')->map->count();
+////        //dd($requestsByType);
+////        $requestsByStatus = $collection->groupBy('status')->map->count();
+////        $pie_labels = response()->json($requestsByStatus->keys()); // Les labels (ex: 'new', 'assigned', etc.)
+////        $pie_data = response()->json($requestsByStatus->values()); // Les valeurs (ex: 14, 10, etc.)
+////
+////        //Critical (1), High (2), Medium (3), Low (4)
+////        $requestsByPriority =  $collection->where('priority', 1)->count();
+////
+////        $requestsByPriority = $collection->groupBy('priority')->map->count();
+//////        dd($requestsByPriority);
 //
-//        $requestsByPriority = $collection->groupBy('priority')->map->count();
-////        dd($requestsByPriority);
-
-        //Liste complète des sites (array(id=>name))
-        $pref = session('preferences');
-        $locations = $pref->locations_list->toArray();
-        $locations_filter =$pref->getLocationFilter()->toArray();
-        $user_filter = $pref->getUserFilter();
-
-        return $dataTable->render('frontend.request.openedrequest.list2',
-            compact('locations','locations_filter','user_filter'));
-//        ,
-//                'totalTickets','requestsByPriority','requestsByStatus','requestsByType',
-//                'pie_labels','pie_data'
-//            ));
-
-    }
+//        //Liste complète des sites (array(id=>name))
+//        $pref = session('preferences');
+//        $locations = $pref->locations_list->toArray();
+//        $locations_filter =$pref->getLocationFilter()->toArray();
+//        $user_filter = $pref->getUserFilter();
+//
+//        return $dataTable->render('frontend.request.openedrequest.list2',
+//            compact('locations','locations_filter','user_filter'));
+////        ,
+////                'totalTickets','requestsByPriority','requestsByStatus','requestsByType',
+////                'pie_labels','pie_data'
+////            ));
+//
+//    }
 
     /**
      * Show the form for editing the specified resource.

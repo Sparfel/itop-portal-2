@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\Itop\ItopWebserviceRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 
 class ProfileController extends Controller
 {
@@ -116,7 +119,7 @@ class ProfileController extends Controller
         }
 
         // on mémorie les dates
-        if ($Adatas['datefilter']!== null) {
+        if (isset($Adatas['userFilter']) && $Adatas['datefilter']!== null) {
             $Adate = explode('-', $Adatas['datefilter']);
             //dd($Adate);
             $startDate = $Adate[0];
@@ -159,5 +162,37 @@ class ProfileController extends Controller
     }
 
 
+    public function verifyOldPassword(Request $request)
+    {   \Log::debug($request);
+
+        $user = auth()->user();
+        $isValid = Hash::check($request->input('password'), $user->password);
+        return response()->json(['valid' => $isValid]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        // Validation
+        $validator = Validator::make($request->all(), [
+//            'newPassword' => 'required|string|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[\W]/',
+            'newPassword' => 'required|string|min:6',
+
+        ]);
+
+        // Vérifier si la validation échoue
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422); // Code 422 pour les erreurs de validation
+        }
+
+        // Si la validation réussit
+        $user = auth()->user();
+        $user->password = Hash::make($request->input('newPassword'));
+        $user->save();
+
+        return response()->json(['success' => true]);
+    }
 
 }

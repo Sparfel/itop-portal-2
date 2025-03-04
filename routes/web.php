@@ -10,8 +10,9 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/test', [App\Http\Controllers\HomeController::class, 'test'])->name('test');
     Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'dashboard'])->name('home');
+    Route::get('/getcommunications', [App\Http\Controllers\HomeController::class, 'getCommunications'])->name('getcommunications');//->middleware('can:get_communications');
     //Json for dashboard component
     Route::get('/listrequests', [App\Http\Controllers\HomeController::class, 'getListRequests'])->name('listrequests'); //->middleware('can:list_requests');
 
@@ -25,8 +26,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/openedrequest', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'index'])->name('openedrequestall'); //->middleware('can:browse_opened_request');
         //Gestion des filtres
         //Route::get('/openedrequest/prio/{priority}', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'index'])->name('openedrequest.filter.prio'); //->middleware('can:browse_opened_request');
-        Route::get('/openedrequest/filter/{priority}/{type?}', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'index'])
-            ->name('openedrequest.filter');
+//        Route::get('/openedrequest/filter/{priority}/{type?}', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'index'])
+//            ->name('openedrequest.filter');
+    Route::get('/openedrequest/filter', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'index'])->name('openedrequest.filter');
+    Route::get('/closedrequest/filter', [App\Http\Controllers\Frontend\Request\ClosedRequestController::class, 'index'])->name('closedrequest.filter');
+
 
     Route::post('/openedrequest/{id}', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'update'])->name('openedrequest'); //->middleware('can:update_opened_request');
     Route::get('/openedrequest/{id}/{tab?}', [App\Http\Controllers\Frontend\Request\OpenedRequestController::class, 'edit'])->name('openedrequest'); //->middleware('can:view_opened_request');
@@ -52,10 +56,14 @@ Route::middleware(['auth'])->group(function () {
     //gestion du cas ou l'ID est dans l'url
     Route::get('/profile/{id}', [App\Http\Controllers\Frontend\User\ProfileController::class, 'index'])->name('profile'); //->middleware('can:view_profile');
     Route::post('/profile/{id}', [App\Http\Controllers\Frontend\User\ProfileController::class, 'store'])->name('profile');//->middleware('can:update_profile');
+    //changement de mot de passe
+    Route::post('/change-password', [App\Http\Controllers\Frontend\User\ProfileController::class, 'changePassword'])->name('changePassword');
+    Route::post('/verify-old-password', [App\Http\Controllers\Frontend\User\ProfileController::class, 'verifyOldPassword'])->name('verifyOldPassword');
+    Route::get('/verify-old-password', [App\Http\Controllers\Frontend\User\ProfileController::class, 'verifyOldPassword'])->name('verifyOldPassword');
 
     //Consultation des logs
     // Log viewer
-    Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+    Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->can('logs');
 
 //    Route::get('permission-editor/roles', [\Ihtisham467\LaravelPermissionEditor\Http\Controllers\PermissionController::class, 'index'])->middleware('can:permissions');
 // Restreint uniquement aux utilisateurs ayant la permission 'permissions'
@@ -69,11 +77,61 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
     // !!!!! empecher l'edition ! trop permissif car si pas défini ici alors ça passe !
     /*
     * Ajax call
     */
     Route::get('/getLocations', [App\Http\Controllers\Frontend\AjaxController::class, 'getLocations'])->name('getLocations');
+    Route::get('/getOrganizations', [App\Http\Controllers\Frontend\AjaxController::class, 'getOrganizations'])->name('getOrganizations');
+    Route::get('/getOrganizationLocations', [App\Http\Controllers\Frontend\AjaxController::class, 'getOrganizationLocations'])->name('getOrganizationLocations');
 
+
+    Route::group(['prefix' => 'administration','middleware' => ['can:permissions']], function () {
+        // Comptes
+        Route::get('/listusers', [App\Http\Controllers\Backend\User\UserController::class, 'index'])->name('listusers');
+        Route::post('/edituser', [App\Http\Controllers\Backend\User\UserController::class, 'editUser'])->name('edititopuser');
+        Route::post('/storeuser', [App\Http\Controllers\Backend\User\UserController::class, 'storeUser'])->name('storeuser');
+        Route::post('/deleteuser', [App\Http\Controllers\Backend\User\UserController::class, 'deleteUser'])->name('deleteuser');
+        Route::post('/deleteusers', [App\Http\Controllers\Backend\User\UserController::class, 'deleteUsers'])->name('deleteusers');
+
+        //Permissions
+        //Route::get('/listroles', [App\Http\Controllers\Backend\Permission\RoleController::class, 'index'])->name('listroles');
+        //Route::get('/editrole', [App\Http\Controllers\Backend\Permission\RoleController::class, 'edit'])->name('editrole');
+        Route::resource('roles', App\Http\Controllers\Backend\Permission\RoleController::class);
+        Route::resource('permissions', App\Http\Controllers\Backend\Permission\PermissionController::class);
+
+        //Import
+        Route::post('/importPerson', [App\Http\Controllers\Backend\SynchronizationController::class, 'importPerson'])->name('importPerson');
+        Route::post('/truncatePerson', [App\Http\Controllers\Backend\SynchronizationController::class, 'truncatePerson'])->name('truncatePerson');
+
+        //Import iTop
+        Route::get('/listitopusers', [App\Http\Controllers\Backend\User\ItopUserController::class, 'listitopusers'])->name('listitopusers');
+        Route::post('/ajxcreateusers', [App\Http\Controllers\Frontend\AjaxController::class, 'createUsers'])->name('ajxcreateusers');
+        Route::post('/storeitopuser', [App\Http\Controllers\Frontend\AjaxController::class, 'storeItopUser'])->name('storeitopuser');
+        //    Route::get('/edititopuser/{id}', [App\Http\Controllers\Backend\User\ItopUserController::class, 'editItopUser'])->name('edititopuser');
+        Route::post('/edititopuser', [App\Http\Controllers\Backend\User\ItopUserController::class, 'editItopUser2'])->name('edititopuser');
+        Route::post('/deleteitopuser', [App\Http\Controllers\Backend\User\ItopUserController::class, 'deleteItopUser'])->name('deleteitopuser');
+        Route::post('/deleteitopusers', [App\Http\Controllers\Backend\User\ItopUserController::class, 'deleteItopUsers'])->name('deleteitopusers');
+        Route::post('/notifyitopusers', [App\Http\Controllers\Backend\User\ItopUserController::class, 'notifyItopUsers'])->name('notifyitopusers');
+
+        Route::post('/syncitopusers', [App\Http\Controllers\Backend\User\ItopUserController::class, 'syncitop'])->name('syncitopusers');
+        Route::get('/syncitopusers', [App\Http\Controllers\Backend\User\ItopUserController::class, 'syncitop'])->name('syncitopusers');
+
+        Route::get('/listitoporg', [App\Http\Controllers\Backend\Itop\OrganizationController::class, 'index'])->name('listitoporg');
+        Route::post('/deleteitoporg', [App\Http\Controllers\Backend\Itop\OrganizationController::class, 'deleteItopOrg'])->name('deleteitoporg');
+        Route::post('/deleteitoporgs', [App\Http\Controllers\Backend\Itop\OrganizationController::class, 'deleteItopOrgs'])->name('deleteitorgs');
+        Route::post('/importOrg', [App\Http\Controllers\Backend\SynchronizationController::class, 'importOrg'])->name('importOrg');
+        Route::post('/storeitoporg', [App\Http\Controllers\Frontend\AjaxController::class, 'storeItopOrg'])->name('storeitoporg');
+        Route::post('/edititoporg', [App\Http\Controllers\Backend\Itop\OrganizationController::class, 'editItopOrg'])->name('edititoporg');
+
+        Route::get('/listitoploc', [App\Http\Controllers\Backend\Itop\LocationController::class, 'index'])->name('listitoploc');
+        Route::post('/deleteitoploc', [App\Http\Controllers\Backend\Itop\LocationController::class, 'deleteItopLoc'])->name('deleteitoploc');
+        Route::post('/deleteitoplocs', [App\Http\Controllers\Backend\Itop\LocationController::class, 'deleteItopLocs'])->name('deleteitlocs');
+        Route::post('/importLoc', [App\Http\Controllers\Backend\SynchronizationController::class, 'importLoc'])->name('importLoc');
+        Route::post('/storeitoploc', [App\Http\Controllers\Frontend\AjaxController::class, 'storeItopLoc'])->name('storeitoploc');
+        Route::post('/edititoploc', [App\Http\Controllers\Backend\Itop\LocationController::class, 'editItopLoc'])->name('edititoploc');
+
+    });
 
 });

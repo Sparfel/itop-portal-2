@@ -253,7 +253,7 @@ class ItopWebserviceRepository
 
        );
         //dd($aData);
-//        Log::debug($aData);
+//        Log::debug($this->CallWebService( $aData));
         return $this->jsonToArray($this->CallWebService( $aData));
         //return json_decode($this->CallWebService( $aData));
     }
@@ -274,7 +274,7 @@ class ItopWebserviceRepository
 									servicesubcategory_name,
 									caller_id_friendlyname,agent_id_friendlyname,agent_id,last_update,close_date,public_log,pending_reason'
 
-            /* itop syleps -->'output_fields' => 'public_log,private_log,description'*/
+            /* itop sydel -->'output_fields' => 'public_log,private_log,description'*/
         );
         $results = json_decode($this->CallWebService($aData), true);
         //dd($results);
@@ -583,7 +583,7 @@ class ItopWebserviceRepository
             'operation' => 'core/get',
             'class' => 'Person',
             'key' => 'SELECT Person WHERE email = "' . $email . '" AND status="active"',
-            'output_fields' => 'id,name,first_name,phone,org_id,org_name,site_id, site_name,employee_number,department,service'
+            'output_fields' => 'id,name,first_name,phone,org_id,org_name,location_id, location_name,employee_number,department,service'
         );
         //dd($this->CallWebService( $aData));
         $result = $this->CallWebService($aData);
@@ -637,8 +637,8 @@ class ItopWebserviceRepository
         $aData = array(
             'operation' => 'core/get',
             'class' => 'Organization',
-            'key' => 'SELECT Organization WHERE (type = "both" OR type = "customer") AND status = "active"',
-            'output_fields' => 'id,name,parent_id,type'
+            'key' => 'SELECT Organization WHERE status = "active"',
+            'output_fields' => 'id,name,parent_id'
         );
         $result = $this->CallWebService($aData);
         return $this->jsonToArray($result);
@@ -678,7 +678,69 @@ class ItopWebserviceRepository
         return $this->jsonToArray($result);
     }
 
+    /*
+     * Mise à jour de l'ojbet Person dans iTop sur maj côté Portail
+     */
+    public function UpdateUser($itop_id,
+                               $login,
+                               $first_name,
+                               $last_name,
+                               $email,
+                               $org_id,
+                               $location_id,
+                               $phone,
+                               $mobile_phone,
+                               $function,
+    )
+    {
+        $aData = array(
+            'operation'=>'core/update',
+            'comment'=>'Maj via le portail Syleps par '.$this->_first_name.' '.$this->_name,
+            'class'=>'Person',
+            'key' => $itop_id,
+            'output_fields'=>'id,friendlyname',
+            'fields'=>array(
+                'first_name'=>$first_name,
+                'name'=>$last_name,
+                'email'=>$email,
+                'org_id'=>$org_id,
+                'location_id'=> $location_id ?? 0,
+                'phone'=>$phone,
+                'mobile_phone'=>$mobile_phone,
+                'function'=>$function
 
+            ),
+        );
+        $result = $this->CallWebService( $aData);
+//        \Log::debug($result);
+        return $result;
+    }
+
+    public function UpdateLocation($loc_id,
+                               $address,
+                               $city,
+                               $postal_code,
+                               $country,
+                               $status)
+     {
+        $aData = array(
+            'operation'=>'core/update',
+            'comment'=>'Maj via le portail Syleps par '.$this->_first_name.' '.$this->_name,
+            'class'=>'Location',
+            'key' => $loc_id,
+            'output_fields'=>'id,name',
+            'fields'=>array(
+                'address'=>$address,
+                'city'=>$city,
+                'postal_code'=>$postal_code,
+                'country'=>$country,
+                'status'=> $status
+            ),
+        );
+        $result = $this->CallWebService( $aData);
+//        \Log::debug($result);
+        return $result;
+    }
 
     /*
      * Récupération des membres des équipes pour la page de contacts.
@@ -773,18 +835,19 @@ class ItopWebserviceRepository
      */
     public function getCustomerContacts()
     {
-        $Afields = array('id', 'name', 'first_name', 'email', 'org_id', 'org_name', 'site_id', 'site_name', 'phone', 'mobile_phone', 'comment');
+        $Afields = array('id', 'name', 'first_name', 'email', 'org_id', 'org_name', 'location_id', 'location_name', 'phone', 'mobile_phone', 'function');
         $aData = array(
             'operation' => 'core/get',
             'class' => 'Person',
             'key' => 'SELECT Person AS P JOIN Organization AS O ON P.org_id = O.id
-							WHERE P.org_id != "1" AND P.status = "active"
-								AND (P.email !="" AND P.email != "fsy.maintenance@fivesgroup.com")
-								AND O.type="customer"',
+                                WHERE P.status = "active"
+                                AND P.email !=""
+                                AND O.status = "active"',
             'output_fields' => implode(",", $Afields),
 
         );
         $results = $this->CallWebService($aData);
+//        \Log::debug($results);
         return $this->jsonToArray($results);
     }
 
@@ -795,7 +858,7 @@ class ItopWebserviceRepository
      *
      */
 
-    public function CreateItopAccount($contact_id, $login, $first_name, $last_name, $email, $org_id, $class = 'UserLocal')
+    public function CreateItopAccount($contact_id, $login, $password,$first_name, $last_name, $email, $org_id, $class = 'UserLocal')
     {
         $aData = array(
             'operation' => 'core/create',
@@ -808,7 +871,7 @@ class ItopWebserviceRepository
                 //'first_name'=>$first_name,
                 //'last_name'=>$last_name,
                 //'email'=>$email,
-                'password' => $first_name . '1234',
+                'password' => $password,
                 'allowed_org_list' => array(
                     array('allowed_org_id' => $org_id)
                 ),
@@ -825,7 +888,7 @@ class ItopWebserviceRepository
         return $result;
     }
 
-    //Creation de l'opbjet Person (fiche Contact dans iTop)
+    //Creation de l'objet Person (fiche Contact dans iTop)
     public function CreateUser($first_name,
                                $last_name,
                                $email,
@@ -833,34 +896,28 @@ class ItopWebserviceRepository
                                $location_id,
                                $phone,
                                $mobile_phone,
-                               $comment,
-                               $department = null,
-                               $service = null)
+                               $function)
     {
-
+        \Log::debug('iTop WS : CreateUser');
         $aData = array(
             'operation' => 'core/create',
             'comment' => 'Création via Portail Syleps par ' . $this->_first_name . ' ' . $this->_name,
             'class' => 'Person',
-            'output_fields' => 'id, friendlyname,org_name,site_name',
+            'output_fields' => 'id, first_name,name,org_name,location_name',
             'fields' => array(
-                'org_id' => $org_id, //'SELECT Organization WHERE name = "SYLEPS"',
                 'first_name' => $first_name,
                 'name' => $last_name,
                 'email' => $email,
                 'org_id' => $org_id,
-                'site_id' => $location_id,//'location_id'=>$location_id,
+                'location_id' =>$location_id ?? 0,//'location_id'=>$location_id,
                 'phone' => $phone,
                 'mobile_phone' => $mobile_phone,
-                'comment' => $comment,
-                'department' => $department,
-                'service' => $service
+                'function' => $function
             ),
         );
-        //echo json_encode($aData);
-        //error_log(htmlspecialchars_decode (Zend_Debug::dump($aData)),3,"/var/tmp/mes-erreurs.log");
+        \Log::debug($aData);
         $result = $this->CallWebService($aData);
-        //error_log(htmlspecialchars_decode (Zend_Debug::dump($result)),3,"/var/tmp/mes-erreurs.log");
+        \Log::debug($result);
         return $result;
     }
 
@@ -1265,7 +1322,7 @@ class ItopWebserviceRepository
 							AND item_class = "UserRequest"
 							AND item_org_id = "' . $org_id . '"', /*pour éviter au petits malins de modifier l\'url et de voir les ticket des voisins*/
             'output_fields' => 'id,temp_id,expire,item_class,item_id,item_org_id,contents,friendlyname'
-            /* itop syleps -->'output_fields' => 'public_log,private_log,description'*/
+            /* itop sydel -->'output_fields' => 'public_log,private_log,description'*/
         );
         $results = $this->CallWebService($aData);
         return $this->jsonToArray($results);
@@ -1323,7 +1380,7 @@ class ItopWebserviceRepository
             'class' => 'InlineImage',
             'key' => 'SELECT InlineImage WHERE item_id = "' . $id . '"AND secret = "' . $secret . '"',
             'output_fields' => 'id,friendlyname,contents,item_class, item_id,item_org_id,expire,temp_id,secret'
-            /* itop syleps -->'output_fields' => 'public_log,private_log,description'*/
+            /* itop sydel -->'output_fields' => 'public_log,private_log,description'*/
         );
         $results = $this->jsonToArray($this->CallWebService($aData));
         //dd($this->jsonToArray($results));
@@ -1436,7 +1493,7 @@ class ItopWebserviceRepository
     }
 
 
-    public function getListRequest4Component_fives($clause = null, $org_id = null){
+    public function getListRequest4Component_5s($clause = null, $org_id = null){
         $where = '';
 //        $whereFilterLocation = $this->getLocationFilter($this->_OPref->getOrgLocationFilter($this->_OPref->paramName_RequestUserLocation));
         //On autorise selon le cas à visualiser les données d'autre organisations
@@ -1564,30 +1621,61 @@ class ItopWebserviceRepository
         return $this->jsonToArray($results);
     }
 
+    function getExtensions($extension) {
+        $aData = array(
+            'operation'=> 'core/get',
+            'class' => 'ExtensionInstallation',
+            'key' => 'SELECT ExtensionInstallation WHERE code = "'.$extension.'"',
+            'output_fields' => 'id,code, label, version, installed, source'
+        );
+        //Zend_Debug::dump($aData);
+        $results = $this->CallWebService($aData);
+        return $this->jsonToArray($results);
+    }
+
+    function hasExtensions($extension) {
+        $aData = array(
+            'operation'=> 'core/get',
+            'class' => 'ExtensionInstallation',
+            'key' => 'SELECT ExtensionInstallation WHERE code = "'.$extension.'"',
+            'output_fields' => 'id,code, label, version, installed, source'
+        );
+        $results = $this->CallWebService($aData);
+        if (is_null(($this->jsonToArray($results)))) {
+            return false;}
+        else {return true;}
+
+    }
+
 //$date = Carbon::now();
 //('date' => $date->format('Y-m-d H:m:s'),
     function getCommunication() {
-        date_default_timezone_set('Europe/Paris');
-        $date = Carbon::now();
-//        $dateStr = $date->get('YYYY-MM-dd HH:mm:ss');
-        $dateStr = $date->format('Y-m-d H:i:s');
+        if ($this->hasExtensions('itop-communications')) {
+            date_default_timezone_set('Europe/Paris');
+            $date = Carbon::now();
+            //        $dateStr = $date->get('YYYY-MM-dd HH:mm:ss');
+            $dateStr = $date->format('Y-m-d H:i:s');
 
-        $query = "SELECT C, lnkCO
-                    FROM Communication AS C
-                    JOIN lnkCommunicationToOrganization AS lnkCO
-                    ON lnkCO.communication_id = C.id
-                    WHERE lnkCO.org_id = '".$this->_org_id."'
-                        AND C.start_date < '".$dateStr."' AND C.end_date > '".$dateStr."'
-                        AND C.status = 'ongoing'";
+            $query = "SELECT C, lnkCO
+                        FROM Communication AS C
+                        JOIN lnkCommunicationToOrganization AS lnkCO
+                        ON lnkCO.communication_id = C.id
+                        WHERE lnkCO.org_id = '" . $this->_org_id . "'
+                            AND C.start_date < '" . $dateStr . "' AND C.end_date > '" . $dateStr . "'
+                            AND C.status = 'ongoing'
+                            AND C.allowed_portals LIKE '%portal%'";
 
-        //Zend_Debug::dump($query);
-        $xml = $this->callRestWebService($query,null);
-        //dd($query);
-        //$tab_result = $xml;
-        if (!is_null($xml)){
-            $tab_result = $this->xmlToArray($xml);
-            //	Zend_Debug::dump($tab_result);
-            return collect($tab_result);
+            //Zend_Debug::dump($query);
+            $xml = $this->callRestWebService($query, null);
+            //dd($query);
+            //$tab_result = $xml;
+            if (!is_null($xml) && $xml != 'Error') {
+                $tab_result = $this->xmlToArray($xml);
+                //	Zend_Debug::dump($tab_result);
+                return collect($tab_result);
+            } else {
+                return null;
+            }
         }
         else {return null;}
 
@@ -1720,7 +1808,7 @@ class ItopWebserviceRepository
     //Récupération des sites pour la synchronisation quotidienne
     public function getAllSyncLocations($Atype){
         $where = '';
-        if ((!(is_null($Atype))) && (is_array($Atype))) {
+        /*if ((!(is_null($Atype))) && (is_array($Atype))) {
             $where .= ' WHERE (';
             //$where .= 'WHERE L.status = "Active" AND (';
             $i = 0;
@@ -1730,15 +1818,16 @@ class ItopWebserviceRepository
                 if ($i < count($Atype)) {$where .= ' OR ';};
             }
             $where .= ')';
-        }
+        }*/
         $aData = array(
             'operation'=> 'core/get',
-            'class' => 'Site',
-            'key' => 'SELECT L FROM Site AS L JOIN Organization AS O ON L.org_id = O.id '.$where,
-            'output_fields' => 'id,name,org_id,address,postal_code,city,country,status,
-                                deliverymodel_id,deliverymodel_id_friendlyname');
+            'class' => 'Location',
+            'key' => 'SELECT L FROM Location AS L JOIN Organization AS O ON L.org_id = O.id '.$where,
+            'output_fields' => 'id,name,org_id,address,postal_code,city,country,status'
+            );
 
         $result = $this->CallWebService($aData);
+
         return $this->jsonToArray($result);
     }
 

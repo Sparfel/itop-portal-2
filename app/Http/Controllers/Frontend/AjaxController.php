@@ -109,6 +109,7 @@ class AjaxController extends Controller
     public function getOrganizations(){
         $itopWS = new ItopWebserviceRepository();
         $listOrganization = $itopWS->getOrganizations();
+//        \Log::debug($listOrganization);
         return response()->json($listOrganization);
     }
 
@@ -139,17 +140,55 @@ class AjaxController extends Controller
      * Ajax call for users creations
      */
 
-    public function createUsers(Request $request){
-        $result = '';
-        if ($request->input('listId') !== null) {
-            foreach ($request->input('listId') as $id) {
-                $itopUser = ItopUser::where('id', $id)->first();
-                $account = new Account($itopUser);
-                $result = $account->next();
-                Log::debug($result);
+//    public function createUsers(Request $request){
+//        $result = '';
+//        if ($request->input('listId') !== null) {
+//            foreach ($request->input('listId') as $id) {
+//                $itopUser = ItopUser::where('id', $id)->first();
+//                $account = new Account($itopUser);
+//                $result = $account->next();
+//                Log::debug($result);
+//            }
+//        }
+//        return response()->json($result);
+//    }
+
+    public function createUsers(Request $request) {
+        try {
+            $results = [];
+
+            if ($request->has('listId') && is_array($request->input('listId'))) {
+                foreach ($request->input('listId') as $id) {
+                    $itopUser = ItopUser::where('id', $id)->first();
+
+                    if (!$itopUser) {
+                        throw new \Exception("Utilisateur avec l'ID $id introuvable.");
+                    }
+
+                    $account = new Account($itopUser);
+                    $result = $account->next();
+                    $results[] = $result;
+
+                    Log::debug("Utilisateur $id traité : " . json_encode($result));
+                }
+            } else {
+                throw new \Exception("La liste des IDs est vide ou invalide.");
             }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tous les utilisateurs ont été traités avec succès.',
+                'data' => $results
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Erreur dans createUsers : " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => "Erreur : " . $e->getMessage()
+            ], 400); // Code HTTP 400 pour signaler une erreur côté client
         }
-        return response()->json($result);
     }
 
 
@@ -175,17 +214,23 @@ class AjaxController extends Controller
 
         $DBloc = new Location();
         $locationRow = $DBloc::find($request->location);
-        $ItopUser->location_name = $locationRow->name;
+        $ItopUser->location_name = $locationRow ? $locationRow->name : null;
 
         $ItopUser->role_id = $request->role;
         $ItopUser->comment = $request->comment;
         if ($request->input('is_local') !== null) {$ItopUser->is_local = $request->is_local;}
         else {$ItopUser->is_local = 0;}
-        if ($request->input('is_in_itop') !== null) {$ItopUser->is_in_itop = $request->is_in_itop;}
+        if ($request->input('is_in_itop') !== null) {
+            $ItopUser->is_in_itop = $request->is_in_itop;
+            //MAJ côté iTop des données du Contact, car il existe
+            $this->PostStoreItopUser($ItopUser);
+        }
         else {$ItopUser->is_in_itop = 0;}
         if ($request->input('has_itop_account') !== null) {$ItopUser->has_itop_account = $request->has_itop_account;}
         else {$ItopUser->has_itop_account = 0;}
         $result = $ItopUser->save();
+
+
         return response()->json($result);
 
         /*
@@ -198,6 +243,110 @@ class AjaxController extends Controller
                         'comment' : $("#comment").val(),
          */
 
+    }
+
+    private function PostStoreItopUser(ItopUser $ItopUser){
+        $itopWS = new ItopWebserviceRepository();
+//        \Log::debug('Location ID '.$ItopUser->location_id);
+//        $itopPerson = $itopWS->updateUser($ItopUser->itop_id,
+//                            $ItopUser->login,
+//                            $ItopUser->first_name,
+//                            $ItopUser->last_name,
+//                            $ItopUser->email,
+//                            $ItopUser->org_id,
+//                            $ItopUser->location_id,
+//                            $ItopUser->phone,
+//                            $ItopUser->mobile_phone,
+//                            $ItopUser->comment);
+        try {
+            $itopPerson = $itopWS->updateUser(
+                $ItopUser->itop_id,
+                $ItopUser->login,
+                $ItopUser->first_name,
+                $ItopUser->last_name,
+                $ItopUser->email,
+                $ItopUser->org_id,
+                $ItopUser->location_id,
+                $ItopUser->phone,
+                $ItopUser->mobile_phone,
+                $ItopUser->comment
+            );
+
+            // Vérification de la réponse si nécessaire
+            if (!$itopPerson) {
+                throw new Exception("La mise à jour de l'utilisateur a échoué.");
+            }
+
+        } catch (Exception $e) {
+            // Log de l'erreur (important pour le debugging)
+            \Log::error("Erreur lors de la mise à jour de l'utilisateur sur iTop : " . $e->getMessage());
+
+            // Optionnel : Afficher un message utilisateur
+            echo "Erreur : Impossible de mettre à jour l'utilisateur. Veuillez réessayer plus tard.";
+        }
+    }
+
+    private function PostStoreItopLocation(Location $location){
+        $itopWS = new ItopWebserviceRepository();
+//        \Log::debug('Location ID '.$ItopUser->location_id);
+
+        try {
+            $itopLocation = $itopWS->updateLocation($location->id,
+                $location->address,
+                $location->city,
+                $location->postal_code,
+                $location->country,
+                $location->status);
+
+            // Vérification de la réponse si nécessaire
+            if (!$itopLocation) {
+                throw new Exception("La mise à jour du site a échoué.");
+            }
+
+        } catch (Exception $e) {
+            // Log de l'erreur (important pour le debugging)
+            \Log::error("Erreur lors de la mise à jour du site sur iTop : " . $e->getMessage());
+
+            // Optionnel : Afficher un message utilisateur
+            echo "Erreur : Impossible de mettre à jour du site. Veuillez réessayer plus tard.";
+        }
+    }
+
+    public function storeItopOrg(Request $request){
+        $ItopOrg = Organization::firstOrNew(array('id' => $request->input('id')));
+        if ($request->input('id') !== null) {
+            $ItopOrg->id = $request->id;
+        }
+        $ItopOrg->deliverymodel_id_friendlyname = $request->deliverymodel_id_friendlyname;
+        $result = $ItopOrg->save();
+        return response()->json($result);
+ }
+
+    public function storeItopLoc(Request $request)
+    {
+        $itopLoc = Location::firstOrNew(['id' => $request->input('id')]);
+
+        if ($request->input('id') !== null) {
+            $itopLoc->id = $request->id;
+        }
+
+        $itopLoc->name = $request->name;
+        //$itopLoc->org_id = $request->org_id;
+        $itopLoc->phonecode = $request->phonecode;
+        $itopLoc->address = $request->address;
+        $itopLoc->postal_code = $request->postal_code;
+        $itopLoc->city = $request->city;
+        $itopLoc->country = $request->country;
+        $itopLoc->latitude = $request->latitude;
+        $itopLoc->longitude = $request->longitude;
+        $itopLoc->is_active = $request->has('is_active') ? 1 : 0;
+        $itopLoc->is_localized = $request->has('is_localized') ? 1 : 0;
+        $itopLoc->deliverymodel_id = $request->deliverymodel_id;
+        $itopLoc->deliverymodel_id_friendlyname = $request->deliverymodel_id_friendlyname;
+
+        $result = $itopLoc->save();
+        $this->PostStoreItopLocation($itopLoc);
+        return response()->json(['success' => $result, 'itopLoc' => $itopLoc]);
     }
 
 

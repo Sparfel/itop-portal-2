@@ -1,70 +1,43 @@
 <div class="row">
-    <div class="col-lg-3 col-6">
-        <!-- small card -->
-        <div class="small-box bg-warning">
-            <div class="inner">
-                <h3> {{$requestsByType['incident']}}</h3>
+    @php
+        $cards = [
+            'incident' => [
+                'count' => $requestsByType['incident'] ?? 0,
+                'label' => __('Incidents'),
+                'icon' => getTypeIcon('incident'),
+                'color' => getTypeColor('incident', true),
+            ],
+            'service_request' => [
+                'count' => $requestsByType['service_request'] ?? 0,
+                'label' => __('Services Request'),
+                'icon' => getTypeIcon('service_request'),
+                'color' => getTypeColor('service_request', true),
+            ],
+            'undefined' => [
+                'count' => $requestsByType[''] ?? 0,
+                'label' => __('Request Undefined'),
+                'icon' => getTypeIcon(''),
+                'color' => getTypeColor('', true),
+            ],
+        ];
+    @endphp
 
-                <p>{{__('Incidents')}}</p>
+    @foreach($cards as $type => $card)
+        <div class="col-lg-4 col-6">
+            <!-- small card -->
+            <div class="small-box {{ $card['color'] }}">
+                <div class="inner">
+                    <h3>{{ $card['count'] }}</h3>
+                    <p>{{ $card['label'] }}</p>
+                </div>
+                <div class="icon">
+                    <i class="{{ $card['icon'] }}"></i>
+                </div>
+                <a href="{{ route('openedrequest.filter', ['status' => request('status', 'all'), 'priority' => request('priority', 'all'), 'request_type' => $type === 'undefined' ? '' : $type]) }}" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
             </div>
-            <div class="icon">
-                <i class="fa fa-life-ring"></i>
-            </div>
-            <a href="#" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
-            </a>
         </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small card -->
-        <div class="small-box bg-info">
-            <div class="inner">
-                <h3>{{$requestsByType['service_request']}}</h3>
+    @endforeach
 
-                <p>{{__('Services Request')}}</p>
-            </div>
-            <div class="icon">
-                <i class="fa fa-handshake"></i>
-            </div>
-            <a href="#" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
-            </a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small card -->
-        <div class="small-box bg-secondary">
-            <div class="inner">
-                <h3>{{$requestsByType['']}}</h3>
-
-                <p>{{__('Request Undefined')}}</p>
-            </div>
-            <div class="icon">
-                <i class="fa fa-ellipsis-h"></i>
-            </div>
-            <a href="#" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
-            </a>
-        </div>
-    </div>
-    <!-- ./col -->
-{{--    <div class="col-lg-3 col-6">--}}
-{{--        <!-- small card -->--}}
-{{--        <div class="small-box bg-danger">--}}
-{{--            <div class="inner">--}}
-{{--                <h3>65</h3>--}}
-
-{{--                <p>Unique Visitors</p>--}}
-{{--            </div>--}}
-{{--            <div class="icon">--}}
-{{--                <i class="fas fa-chart-pie"></i>--}}
-{{--            </div>--}}
-{{--            <a href="#" class="small-box-footer">--}}
-{{--                More info <i class="fas fa-arrow-circle-right"></i>--}}
-{{--            </a>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-    <!-- ./col -->
 </div>

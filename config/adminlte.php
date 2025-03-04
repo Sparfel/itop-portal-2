@@ -303,35 +303,90 @@ return [
             'topnav' => true,
             'submenu' => [
                 [
-                    'text' => 'Roles',
-                    'url' => 'permission-editor/roles', //https://github.com/ihtisham467/laravel-permission-editor
-                    'icon' => 'fa-solid fa-shield-halved',
-//                    'can'  => 'browse_admin',
+                    'text'    => 'Permissions',
+//                    'url'  => 'admin',
+                    'icon' => 'fa-solid fa-key',
+                    //'can'  => 'browse_admin',
+                    'submenu' => [
+                            [
+                                'text' => 'Roles',
+                                'url' => '/administration/roles', //https://github.com/ihtisham467/laravel-permission-editor
+            //                    'url' => '/administration/listroles', //https://github.com/ihtisham467/laravel-permission-editor
+            //                    'url' => 'permission-editor/roles', //https://github.com/ihtisham467/laravel-permission-editor
+                                'icon' => 'fa-solid fa-shield-halved',
+                                'can'  => 'permissions',
+            //                    'can'  => 'browse_admin',
+                            ],
+                            [
+                                'text' => 'Permissions',
+                                'url' => 'administration/permissions', //https://github.com/ihtisham467/laravel-permission-editor
+            //                    'url' => 'permission-editor/permissions', //https://github.com/ihtisham467/laravel-permission-editor
+                                'icon' => 'fas fa-fw fa-lock',
+            //                    'can'  => 'browse_admin',
+                                'can'  => 'permissions',
+                            ],
+                        ],
+                    ],
+                    [
+                    'text'    => 'Accounts',
+//                    'url'  => 'admin',
+                    'icon' => 'fas fa-users-cog',
+                    //'can'  => 'browse_admin',
+                    'submenu' => [
+                        [
+                            'text' => 'Portal users',
+                            'icon' => 'fas fa-users',
+                            'url'  => 'administration/listusers',
+                        ],
+                        [
+                            'text' => 'Create customer users [iTop]',
+                            'icon' => 'fas fa-user-plus',
+                            'url'  => 'administration/listitopusers',
+                        ],
+//                        [
+//                            'text' => 'Create Fives users [AD]',
+//                            'icon' => 'fas fa-user-friends',
+//                            'url'  => 'administration/adusers',
+//                        ],
+                    ],
                 ],
                 [
-                    'text' => 'Permissions',
-                    'url' => 'permission-editor/permissions', //https://github.com/ihtisham467/laravel-permission-editor
-                    'icon' => 'fas fa-fw fa-lock',
-//                    'can'  => 'browse_admin',
+                    'text'    => 'Synchronizing',
+//                    'url'  => 'admin',
+                    'icon' => 'fa-solid fa-group-arrows-rotate',
+                    //'can'  => 'browse_admin',
+                    'submenu' => [
+                        [
+                            'text' => 'Organizations',
+                            'icon' => 'fa-solid fa-building',
+                            'url'  => 'administration/listitoporg',
+                        ],
+                        [
+                            'text' => 'Locations',
+                            'icon' => 'fa-solid fa-location-dot',
+                            'url'  => 'administration/listitoploc',
+                        ],
+                    ],
                 ],
             ]
         ],
         // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
+//        [
+//            'type' => 'navbar-search',
+//            'text' => 'search',
+//            'topnav_right' => true,
+//        ],
         [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
 
         // Sidebar items:
-        [
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
-        ],
+//        [
+//            'type' => 'sidebar-menu-search',
+//            'text' => 'search',
+//        ],
+        ['header' => 'WELCOME'],
         [
             'text' => 'blog',
             'url' => 'admin/blog',
@@ -348,24 +403,16 @@ return [
             'text'    => 'Logs',
             'icon'    => 'far fa-compass  text-info',
             'url'  => '/logs',
-            'target' => '_blank'
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'profile',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
+            'target' => '_blank',
+            'can' => 'logs'
         ],
 
-        ['header' => 'UserRequest'],
+
+        ['header' => 'USER REQUEST'],
         [
             'text' => 'New Request',
             'url' => 'newrequest',
+            'icon_color' => 'primary',
             'icon' => 'fa-regular fa-comment-dots',
         ],
         [
@@ -378,60 +425,15 @@ return [
             'url' => 'closedrequest',
             'icon' => 'fa-regular fa-rectangle-list',
         ],
-        [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
-        ],
+
+//        ['header' => 'MISCELLIANOUS'],
+//        [
+//            'text' => 'Test',
+//            'url' => 'test',
+//            'icon' => 'fa-solid fa-vial',
+//            'icon_color' => 'success',
+//        ],
+
     ],
 
     /*
@@ -487,8 +489,61 @@ return [
                     'asset' => false,
                     'location' => '//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css',
                 ],
+
             ],
         ],
+        'datatablesPlugins' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap4.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => 'https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap4.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js',
+                ],
+            ],
+        ],
+
+
         'Select2' => [
             'active' => true,
             'files' => [

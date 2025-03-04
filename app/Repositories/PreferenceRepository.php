@@ -267,16 +267,24 @@ class PreferenceRepository
      */
 
     //génération de la liste des sites
-    public function getLocationList(){
-        // liste des sites de l'organisation
-        //$this->locations_list = collect($itopWS->getLocations($data->org_id)); // liste des sites de l'organisation
+    public function getLocationList()
+    {
         $itopWS = new ItopWebserviceRepository();
         $WSlocations = $itopWS->getLocations($this->org_id);
-        $locations_list = $WSlocations->mapWithKeys(function ($item) {
+
+        // Vérifie si la valeur est null ou vide
+        if (empty($WSlocations)) {
+            return collect(); // Retourne une collection vide
+        }
+
+        // Convertit en collection et applique mapWithKeys
+        $locations_list = collect($WSlocations)->mapWithKeys(function ($item) {
             return [$item->id => $item->name];
-            });
+        });
+
         return $locations_list;
     }
+
 
     //Initialisation de la structure que l'on stocke dans la session
     public function initOrgLocationFilter(){

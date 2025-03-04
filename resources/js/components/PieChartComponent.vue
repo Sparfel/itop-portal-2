@@ -81,7 +81,7 @@ export default defineComponent({
                             data: chartData.value,
                             backgroundColor: [
                                 '#EA7D1E', // $itop (orange)
-                                '#007bff', // $blue
+                                '#17a2b8', // $blue
                                 '#ffc107', // $yellow
                                 '#28a745', // $green
                                 '#6f42c1', // $purple
@@ -130,6 +130,7 @@ export default defineComponent({
         // Initialisation du graphique au montage
         onMounted(() => {
             renderChart();
+            // console.log( props.dataProp)
         });
 
         return {

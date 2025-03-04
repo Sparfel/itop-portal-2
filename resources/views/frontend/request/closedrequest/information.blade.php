@@ -54,40 +54,37 @@
                     <dd class="col-sm-8">
 {{--                        {{$Ticket->resolution_code}}--}}
                         @switch($Ticket->resolution_code)
-                            @case ('assistance_util')
-                            <i title="{{__('User assistance')}}" class="far fa-life-ring"></i> {{__('User assistance')}}
-                            @break
-                            @case('assistance_param')
-                            <i title="{{__('Paramater assistance')}}" class="fas fa-wrench"></i> {{__('Paramater assistance')}}
-                            @break
-                            @case('bug')
-                            <i title="{{__('Bug')}}" class="fas fa-bug"></i> {{__('Bug')}}
-                            @break
-                            @case('couldnotreproduce')
-                            <i title="{{__('Could not reproduce')}}" class="far fa-question-circle"></i> {{__('Could not reproduce')}}
-                            @break
-                            @case('evolution')
-                            <i title="{{__('Evolution')}}" class="fas fa-chevron-circle-up"></i> {{__('Evolution')}}
-                            @break
-                            @case('finitionaffaire')
-                            <i title="{{__('End of contract')}}" class="fas fa-hourglass-end"></i> {{__('End of contract')}}
-                            @break
-                            @case('formation')
-                            <i title="{{__('Training')}}" class="fas fa-graduation-cap"></i> {{__('Training')}}
-                            @break
-                            @case('hardwarefailure')
-                            <i title="{{__('Hardware failure')}}" class="fas fa-microchip"></i> {{__('Hardware failure')}}
-                            @break
-                            @case('outofcontract')
-                            <i title="{{__('Out of contract')}}" class="fas fa-times-circle"></i> {{__('Out of contract')}}
-                            @break
-                            @case('solved_by_customer')
-                            <i title="{{__('Solved by customer')}}" class="fas fa-medal"></i> {{__('Solved by customer')}}
-                            @break
+                            @case('assistance')
+                                <i title="{{ __('Assistance') }}" class="far fa-life-ring"></i> {{ __('Assistance') }}
+                                @break
+
+                            @case('bug fixed')
+                                <i title="{{ __('Bug fixed') }}" class="fas fa-bug"></i> {{ __('Bug fixed') }}
+                                @break
+
+                            @case('hardware repair')
+                                <i title="{{ __('Hardware repair') }}" class="fas fa-tools"></i> {{ __('Hardware repair') }}
+                                @break
+
                             @case('other')
-                            <i title="{{__('Other')}}" class="fas fa-map-signs"></i> {{__('Other')}}
-                            @break
+                                <i title="{{ __('Other') }}" class="fas fa-map-signs"></i> {{ __('Other') }}
+                                @break
+
+                            @case('software patch')
+                                <i title="{{ __('Software patch') }}" class="fas fa-puzzle-piece"></i> {{ __('Software patch') }}
+                                @break
+
+                            @case('system update')
+                                <i title="{{ __('System update') }}" class="fas fa-sync-alt"></i> {{ __('System update') }}
+                                @break
+
+                            @case('training')
+                                <i title="{{ __('Training') }}" class="fas fa-graduation-cap"></i> {{ __('Training') }}
+                                @break
+
                         @endswitch
+
+
                     </dd>
                     <dt class="col-sm-4">{{__('Solution')}}</dt>
                     <dd class="col-sm-8">{!! $Ticket->solution !!}</dd>

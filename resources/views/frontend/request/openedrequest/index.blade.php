@@ -11,66 +11,50 @@
     <h1> <i class="fas fa-clipboard-list"></i> {{ __('Your Opened Requests') }}
 
         @php
+            // Récupération des informations sur le type de requête
             $type = request('request_type', 'all');
-            $typeIcon = '';
-            $typeLabel = 'Tous'; // Valeur par défaut
-            $typeClass = 'badge-info'; // Couleur par défaut
+            $typeIcon = $type !== 'all' ? getTypeIcon($type) : '';
+            $typeClass = $type !== 'all' ? getTypeColor($type, true) : 'bg-info';
+            $typeLabel = $type !== 'all' ? __($type === '' ? 'Undefined' : ucfirst($type)) : 'Tous';
 
-            if ($type == 'incident') {
-                $typeLabel = __('Incident');;
-                $typeIcon = '<i class="fa fa-life-ring"></i>';
-            } elseif ($type == 'service_request') {
-                $typeLabel = __('Service request');
-                $typeIcon = '<i class="fa fa-handshake"></i>';
-            } elseif ($type == 'undefined') {
-                $typeLabel = __('Undefined');
-                $typeIcon = '<i class="fa fa-ellipsis-h"></i>';
-            }
+            // Récupération des informations sur la priorité
+            $priority = request('priority', 'all');
+            $priorityIcon = $priority !== 'all' ? getPriorityIcon((int) $priority) : 'fa fa-filter';
+            $priorityClass = $priority !== 'all' ? getPriorityColor((int) $priority, true) : 'bg-secondary';
+            $priorityLabel = $priority !== 'all' ? __(['1' => 'Critical', '2' => 'High', '3' => 'Medium', '4' => 'Low'][(int) $priority] ?? 'Aucune') : 'Aucune';
+
+            // Récupération des informations sur le statut
+            $status = request('status', 'all');
+            $statusIcon = $status !== 'all' ? getStatusIcon($status) : '';
+            $statusClass = $status !== 'all' ? getStatusColor($status, true) : 'bg-info';
+            $statusLabel = $status !== 'all' ? ucfirst($status) : 'Tous';
         @endphp
 
-        @if($type != 'all') <!-- Si un type est sélectionné -->
-        <a href="{{ route('openedrequest.filter', [
-                                                            'priority' => request('priority', 'all'),
-                                                            'request_type' => 'all'
-                                                        ]) }}">
-            <span class="badge {{ $typeClass }}"> {!! $typeIcon !!} {{ $typeLabel }}</span>
-        </a>
+            <!-- Affichage du type de requête si sélectionné -->
+        @if($type !== 'all')
+            <a href="{{ route('openedrequest.filter', ['priority' => request('priority', 'all'), 'status' => request('status', 'all'), 'request_type' => 'all']) }}">
+        <span class="badge {{ $typeClass }}">
+            <i class="{{ $typeIcon }}"></i> {{ $typeLabel }} &times;
+        </span>
+            </a>&nbsp;
         @endif
 
-        @php
-            $priority = request('priority', 'Aucune');
-            $priorityClass = 'badge-secondary'; // Valeur par défaut
-            $priorityLabel = 'Aucune'; // Valeur par défaut
-            $priorityIcon = 'fa fa-filter'; // Valeur par défaut pour l'icône
-
-            if ($priority == 1) {
-                $priorityLabel = __('Critical');
-                $priorityClass = 'badge-danger';
-                $priorityIcon = 'fa-solid fa-fire'; // Icône pour la priorité critique
-            } elseif ($priority == 2) {
-                $priorityLabel = __('High');
-                $priorityClass = 'badge-warning';
-                $priorityIcon = 'fa-solid fa-triangle-exclamation'; // Icône pour la haute priorité
-            } elseif ($priority == 3) {
-                $priorityLabel =__('Medium');
-                $priorityClass = 'badge-info';
-                $priorityIcon = 'fa-solid fa-circle-info'; // Icône pour la priorité moyenne
-            } elseif ($priority == 4) {
-                $priorityLabel = __('Low');
-                $priorityClass = 'badge-secondary';
-                $priorityIcon = 'fa-solid fa-check-circle'; // Icône pour la faible priorité
-            }
-        @endphp
-        &nbsp;
-        @if ($priorityLabel != 'Aucune')
-            <a href="{{ route('openedrequest.filter', [
-        'priority' => 'all',
-        'request_type' => request('request_type', 'all')
-    ]) }}">
+        <!-- Affichage de la priorité si sélectionnée -->
+        @if($priority !== 'all')
+            <a href="{{ route('openedrequest.filter', ['priority' => 'all', 'status' => request('status', 'all'), 'request_type' => request('request_type', 'all')]) }}">
         <span class="badge {{ $priorityClass }}">
-            <i class="{{ $priorityIcon }}"></i> {{ $priorityLabel }}
+            <i class="{{ $priorityIcon }}"></i> {{ $priorityLabel }} &times;
         </span>
-            </a>
+            </a>&nbsp;
+        @endif
+
+        <!-- Affichage du statut si sélectionné -->
+        @if($status !== 'all')
+            <a href="{{ route('openedrequest.filter', ['priority' => request('priority', 'all'), 'request_type' => request('request_type', 'all'), 'status' => 'all']) }}">
+        <span class="badge {{ $statusClass }}">
+            <i class="{{ $statusIcon }}"></i> {{ $statusLabel }} &times;
+        </span>
+            </a>&nbsp;
         @endif
 
     </h1>
@@ -81,44 +65,35 @@
     <section class="content">
         <div class="container-fluid text-sm">
             <div class="row">
-                <div class="col-md-3">
-
-{{--                   @include('frontend.request.openedrequest._manage-ticket')--}}
-                   @include('frontend.request.openedrequest._type-ticket')
-                   @include('frontend.request.openedrequest._stats-ticket')
-                </div>
-
+                <!-- Datatable à gauche (col-md-9) -->
                 <div class="col-md-9">
+                    @include('frontend.request.openedrequest._type-ticket')
                     <div class="card card-primary card-outline">
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-list"></i>
                                 {{ __('Opened Requests') }}
                             </h3>
-                            <div class="float-right">
-                                <x-front.filter-preference
-                                    idModal="filterRequestDatatable"
-                                    labelBtn="Filters"
-                                    requestFilter=true
-                                    usrOpenedRqt="true">
-                                </x-front.filter-preference>
-                            </div>
-
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
                             {{ $dataTable->table(['class' => 'table table-bordered table-hover table-sm'], true) }}
                         </div>
+                    </div>
                 </div>
-
-                <!-- /.col -->
+                <!-- Statistiques à droite (col-md-3) -->
+                <div class="col-md-3">
+                    @include('frontend.request.openedrequest._status-widget')
+                    @include('frontend.request.openedrequest._priority-ticket')
+                </div>
             </div>
         </div>
     </section>
 
+@endsection
 
-
-
+@section('footer')
+    &nbsp;
 @endsection
 
 @section('js')

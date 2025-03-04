@@ -22,72 +22,69 @@ class ClosedRequestsDataTable extends DataTable
 
     use DataTableTrait;
 
+    public function __construct(Collection $data)
+    {
+        $this->data = $data;
+    }
     public function dataTable(ItopWebserviceRepository $itopWS)
     {
-        $Colldatas = $this->query($itopWS);
+//        $Colldatas = $this->query($itopWS);
+        $Colldatas = $this->data;
         return datatables($Colldatas)
             ->editColumn('ref2', function($Colldatas) {
                 $link =  '<a href="' . route('closedrequest', $Colldatas->id) . '" target="_self">' .  $Colldatas->ref . '</a>';
                 //return $this->badge('<a href="' . route('openedrequest', $Colldatas->id) . '" target="_blank">' .  $Colldatas->id . '</a>','secondary');
                 {return $link;}
             })
-            ->editColumn('action', function ($Colldatas) {
-                $buttons = $this->button(
-                    'closedrequest',
-                    $Colldatas->id,
-                    'primary',
-                    __('Show'),
-                    'eye',
-                    '',
-                    '_self'
-                );
+//            ->editColumn('action', function ($Colldatas) {
+//                $buttons = $this->button(
+//                    'closedrequest',
+//                    $Colldatas->id,
+//                    'primary',
+//                    __('Show'),
+//                    'eye',
+//                    '',
+//                    '_self'
+//                );
+//
+//                return $buttons;
+//            })
+            ->editColumn('priority', function ($Colldatas) {
+                // Remplace les chiffres par des badges AdminLTE
+                $priorityLabels = [
+                    1 => ['label' => 'Critical', 'class' => 'danger'],
+                    2 => ['label' => 'High', 'class' => 'warning'],
+                    3 => ['label' => 'Medium', 'class' => 'info'],
+                    4 => ['label' => 'Low', 'class' => 'secondary'],
+                ];
 
-                return $buttons;
-//                    . $this->button(
-//                        'openedrequest',
-//                        1,
-//                        'warning',
-//                        __('Edit'),
-//                        'edit'
-//                    );
-//. $this->button(
-//                        'posts.create',
-//                        1,
-//                        'info',
-//                        __('Clone'),
-//                        'clone'
-//                    ). $this->button(
-//                        'posts.destroy',
-//                        1,
-//                        'danger',
-//                        __('Delete'),
-//                        'trash-alt',
-//                        __('Really delete this post?')
-//                    );
-            })->rawColumns(['ref2','action']);;
+                $priority = $priorityLabels[$Colldatas->priority] ?? ['label' => 'Unknown', 'class' => 'dark'];
+
+                return '<span class="badge bg-' . $priority['class'] . '">' . $priority['label'] . '</span>';
+            })
+            ->rawColumns(['ref2','action','priority']);;
     }
 
     /**
      * Return a Collection from iTop Webservice
      */
-    public function query(ItopWebserviceRepository $itopWS)
-    {
-        //$itopWS = new ItopWebserviceRepository();
-        $datas = $itopWS->getListClosedRequest();
-        $parsed_json= json_decode($datas,false);
-//        \Log::debug($parsed_json->{'objects'});
-        if (is_null($parsed_json->{'objects'})) { return collect([]);}
-        $objects = $parsed_json->{'objects'};
-        $Colldatas =  new Collection;
-        $i = 0;
-        foreach ($objects as $object){
-            $Colldatas->push($object->fields);
-            $i++;
-            //if ($i > 9000) {break;}
-        }
-//        \Log::debug($Colldatas);
-        Return $Colldatas;
-    }
+//    public function query(ItopWebserviceRepository $itopWS)
+//    {
+//        //$itopWS = new ItopWebserviceRepository();
+//        $datas = $itopWS->getListClosedRequest();
+//        $parsed_json= json_decode($datas,false);
+////        \Log::debug($parsed_json->{'objects'});
+//        if (is_null($parsed_json->{'objects'})) { return collect([]);}
+//        $objects = $parsed_json->{'objects'};
+//        $Colldatas =  new Collection;
+//        $i = 0;
+//        foreach ($objects as $object){
+//            $Colldatas->push($object->fields);
+//            $i++;
+//            //if ($i > 9000) {break;}
+//        }
+//        Return $Colldatas;
+//    }
 
     /**
      * Optional method if you want to use html builder.
@@ -112,11 +109,21 @@ class ClosedRequestsDataTable extends DataTable
             //            ->pagingType('first_last_numbers')
             ->lengthMenu([[25,100, 200, 400, -1], [25,100, 200, 400, 'All']])
             ->buttons(
-            //Button::make('create'),
-                Button::make(array('extend'=>'export', 'text'=>'<i class="fa fa-download"></i> '.__('Export'))),
-                Button::make(array('extend'=>'print', 'text'=>'<i class="fas fa-print"></i> '.__('Print'))),
-                Button::make(array('extend'=>'reload', 'text'=>'<i class="fas fa-redo"></i> '.__('Reload'))),
-                Button::make(array('extend'=>'colvis', 'text'=>'<i class="fas fa-eye"></i> '.__('Column visibility')))
+                Button::make([
+                    'text' => '<i class="fas fa-download"></i> ' . __('Export'),
+                    'extend' => 'collection',
+                    'buttons' => [
+                        Button::make(['extend' => 'copy', 'text' => '<i class="fas fa-copy"></i> ' . __('Copy')]),
+                        Button::make(['extend' => 'csv', 'text' => '<i class="fas fa-file-csv"></i> ' . __('CSV')]),
+                        Button::make(['extend' => 'excel', 'text' => '<i class="fas fa-file-excel"></i> ' . __('Excel')]),
+                        Button::make(['extend' => 'pdf', 'text' => '<i class="fas fa-file-pdf"></i> ' . __('PDF')]),
+                    ]
+                ]),
+                Button::make([
+                    'text' => '<i class="fas fa-redo"></i> ' . __('Reload'),
+                    'action' => 'function(e, dt, node, config) { dt.ajax.reload(); }'
+                ]),
+                Button::make(['extend' => 'colvis', 'text' => '<i class="fas fa-eye"></i> ' . __('Column visibility')])
             );
     }
 
@@ -142,6 +149,8 @@ class ClosedRequestsDataTable extends DataTable
             Column::make('start_date')->title(__('Start Date')),
             Column::make('last_update')->title(__('Last Update'))->hidden(true),
             Column::make('close_date')->title(__('Close date')),
+            Column::make('priority')->title(__('Priority')),
+            Column::make('request_type')->title(__('Type')),
             Column::make('caller_id_friendlyname')->title(__('Caller')),
             Column::make('agent_id_friendlyname')->title(__('Agent')),
             Column::make('status')->title(__('Status'))->hidden(true),

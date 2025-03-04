@@ -1,71 +1,39 @@
-<div class="card card-info card-outline">
-    <div class="card-header">
-        <h3 class="card-title"> <i class="fa-solid fa-chart-column"></i> {{ __('Overview') }}
+<div class="row">
+    <!-- Info-box for Total Tickets -->
+    <div class="col-12 col-sm-6 col-md-3">
+        <a href="{{ route('openedrequest.filter', ['request_type' => 'all', 'priority' => request('priority', 'all'), 'status' => request('status', 'all')]) }}" style="color: inherit;">
+            <div class="info-box">
+                <span class="info-box-icon bg-primary elevation-1"><i class="fa fa-layer-group"></i></span>
 
-        </h3>
+                <div class="info-box-content">
+                    <span class="info-box-text">{{ __('Total Tickets') }}</span>
+                    <span class="info-box-number">{{ $totalTickets }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </a>
+    </div>
+    <!-- /.col -->
 
-        <div class="card-tools">
-        @if ((request('request_type') && request('request_type') !== 'all'))
-                <a href="{{ route('openedrequest.filter', [
-                                                            'priority' => request('priority', 'all'),
-                                                            'request_type' => 'all'
-                                                        ]) }}">
-                  <i class="fa-solid fa-filter text-warning"></i>
-                </a>
-        @elseif ((request('priority') && request('priority') !== 'all'))
-                <i class="fa-solid fa-filter text-secondary"></i>
-        @endif
-            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+    <!-- Loop through types of tickets only -->
+    <!-- Loop through types of tickets only -->
+    @foreach ($requestsByType as $type => $count)
+        <div class="col-12 col-sm-6 col-md-3">
+            <a href="{{ route('openedrequest.filter', ['status' => request('status', 'all'), 'priority' => request('priority', 'all'), 'request_type' => ($type == '' ? 'undefined' : $type)]) }}" style="color: inherit;">
+                <div class="info-box">
+{{--                <span class="info-box-icon @if ($type == 'incident') bg-info @elseif ($type == 'service_request') bg-danger @elseif ($type == '') bg-warning @else bg-secondary @endif elevation-1">--}}
+                <span class="info-box-icon {{getTypeColor($type,true)}} elevation-1">
+                    <i class="fa-solid {{ getTypeIcon($type) }}"></i>
+                </span>
 
-                <i class="fas fa-minus"></i>
-            </button>
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{ __(ucfirst($type == '' ? 'undefined' : $type)) }}</span>
+                        <span class="info-box-number">{{ $count }}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+            </a>
         </div>
-    </div>
-    <div class="card-body p-0">
-        <table class="table">
-            <tbody><tr>
-                <th style="width:50%"> <i class="fa fa-layer-group"></i>
-                    <a href="{{ route('openedrequest.filter', ['priority' => request('priority', 'all'), 'request_type' => 'all']) }}" class="text-muted">
-                    {{__('Total')}}
-                    </a>
-                </th>
-                <td> {{ $totalTickets }}</td>
-            </tr>
-
-            @if (!empty($requestsByType['incident']))
-                <tr>
-                    <th><i class="fa fa-life-ring"></i>
-                        <a href="{{ route('openedrequest.filter', ['priority' => request('priority', 'all'), 'request_type' => 'incident']) }}" class="text-muted">
-                            {{__('Incident')}}
-                        </a>
-                    </th>
-                    <td> {{ $requestsByType['incident'] }}</td>
-                </tr>
-            @endif
-            @if (!empty($requestsByType['service_request']))
-            <tr>
-                <th> <i class="fa fa-handshake"></i>
-                    <a href="{{ route('openedrequest.filter', ['priority' => request('priority', 'all'), 'request_type' => 'service_request']) }}" class="text-muted">
-                        {{__('Service request')}}
-                    </a>
-                </th>
-                <td> {{ $requestsByType['service_request'] }}</td>
-            </tr>
-            @endif
-            @if (!empty($requestsByType['']))
-            <tr>
-                <th>
-{{--                    <i class="fa-regular fa-circle-question"></i> --}}
-                    <a href="{{ route('openedrequest.filter', ['priority' => request('priority', 'all'), 'request_type' => 'undefined']) }}" class="text-muted">
-                    <i class="fa fa-ellipsis-h"></i>
-                    {{__('Undefined')}}
-                    </a>
-                </th>
-                <td> {{ $requestsByType[''] }}</td>
-            </tr>
-            @endif
-
-            </tbody></table>
-    </div>
-    <!-- /.card-body -->
+        <!-- /.col -->
+    @endforeach
 </div>

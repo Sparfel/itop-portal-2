@@ -1,44 +1,37 @@
+@push('css')
+    <style>
 
-{{--@isset($Aattach)--}}
-{{--    <div class="row">--}}
-{{--        @foreach( $Aattach as $attach)--}}
-{{--            <div class="col-md-3 col-sm-6 col-12">--}}
-{{--                <div class="info-box">--}}
-{{--                    <span class="info-box-icon bg-primary">--}}
-{{--                        @switch($attach->contents->mimetype)--}}
-{{--                            @case('image/jpeg')--}}
-{{--                            <i class="far fa-file-image"></i>--}}
-{{--                            @break--}}
-{{--                            @case('image/png')--}}
-{{--                            <i class="far fa-file-image"></i>--}}
-{{--                            @break--}}
-{{--                            @case('application/pdf')--}}
-{{--                            <i class="far fa-file-pdf"></i>--}}
-{{--                            @break--}}
-{{--                            @case('application/vnd.ms-excel')--}}
-{{--                            <i class="far fa-file-excel"></i>--}}
-{{--                            @break--}}
-{{--                            @case('application/zip')--}}
-{{--                            <i class="far fa-file-archive"></i>--}}
-{{--                            @break--}}
-{{--                            @case('application/x-7z-compressed')--}}
-{{--                            <i class="far fa-file-archive"></i>--}}
-{{--                            @break--}}
-{{--                            @case('application/msword')--}}
-{{--                            <i class="far fa-file-word"></i>--}}
-{{--                            @break--}}
-{{--                            @default--}}
-{{--                            <i class="far fa-file-alt"></i>--}}
-{{--                        @endswitch--}}
-{{--                    </span>--}}
-{{--                    <div class="info-box-content">--}}
-{{--                        <span class="info-box-text ">{{($attach->contents->filename)}}</span>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        @endforeach--}}
-{{--    </div>--}}
-{{--@endif--}}
+        .dropzone {
+
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .dropzone:hover {
+            background-color: lightgrey;
+            border-color: grey;
+        }
+
+        .dropzone p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .dropzone i {
+            font-size: 40px;
+            color: grey;
+        }
+        </style>
+@endpush
 
 <div class="row">
     @isset($Aattach)
@@ -136,7 +129,7 @@
                     </div>
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body" id="file-dropzone">
+                <div class="card-body" id="file-dropzone" >
 {{--                    <div class="dropzone" id="file-dropzone"></div>--}}
                     <form action="{{route('uploadattachment')}}"
                           class="dropzone"

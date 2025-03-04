@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Itop Portal'),
 
+    'version' => env('APP_VERSION', '2.ß'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -79,7 +81,7 @@ return [
     */
 
     'locale' => env('APP_LOCALE', 'en'),
-    'languages' => ['fr' => 'Français', 'en' => 'English', 'de' => 'Deutsch'],
+    'languages' => ['fr' => 'Français', 'en' => 'English', 'de' => 'Deutsch', 'es' => 'Español'],
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
