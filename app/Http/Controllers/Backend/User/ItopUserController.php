@@ -42,7 +42,7 @@ class ItopUserController  extends Controller
             //On liste les personnes référencées (client).
             $persons = $itopWS->getCustomerContacts();
 
-
+            \Log::debug('syncitop');
             if ($request['query'] =='count') {
                 return count($persons);
             }
@@ -92,6 +92,7 @@ class ItopUserController  extends Controller
 
                     }
                     //On vérifie ensuite si la personne a un compte iTop.
+
                     if (isset($AItopAccount[$person->itop_id])) {
                         //Ok, on a un compte iTop avec ce login, on complète alors la fiche
                         $person->has_itop_account = 1;

@@ -97,7 +97,8 @@ export default {
             console.log('Objet monté from setup');
             loading.value = true;
             try {
-                const url = `https://portal.debian/listrequests`;
+                // const url = `https://portal.debian/listrequests`;
+                const url = '/listrequests';
                 const response = await axios.get(url);
                 items.value = response.data;
                 //console.log(items);

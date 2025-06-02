@@ -125,7 +125,8 @@
 
                             </dd>
                             <dt class="col-sm-4">{{__('Solution')}}</dt>
-                            <dd class="col-sm-8">{{$Ticket->solution}}</dd>
+{{--                            <dd class="col-sm-8">{{$Ticket->solution}}</dd>--}}
+                            <dd class="col-sm-8">{!! $Ticket->solution !!}</dd>
                         </dl>
                     </div>
                     <!-- /.card-body -->

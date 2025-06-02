@@ -44,7 +44,7 @@ $yellow:  #ffc107 !default;
 $green:   #28a745 !default;
 $teal:    #20c997 !default;
 $cyan:    #17a2b8 !default;
-$fives:   #af007c !default;
+$itop-portal:   #28B4E6 !default;
 $itop:    #EA7D1E !default;
 
 $colors: () !default;
@@ -64,7 +64,7 @@ $colors: map-merge((
   "gray-dark":  $gray-800
 ), $colors);
 
-$primary:       $itop !default;
+$primary:       $itop-portal !default;
 $secondary:     $gray-600 !default;
 $success:       $green !default;
 $info:          $cyan !default;
@@ -163,8 +163,8 @@ $body-color:                $gray-900 !default;
 //
 // Style anchor elements.
 
-//$link-color:                theme-color("primary") !default;
-$link-color:                $itop !default;
+$link-color:                theme-color("primary") !default;
+//$link-color:                $itop !default;
 $link-decoration:           none !default;
 $link-hover-color:          darken($link-color, 15%) !default;
 $link-hover-decoration:     none !default;

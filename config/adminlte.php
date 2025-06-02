@@ -64,7 +64,7 @@ return [
     */
 
     'logo' => '<b>Portal</b> iTop',
-    'logo_img' => 'img/itop-logo-square.png',
+    'logo_img' => 'img/portal-itop-logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
@@ -86,7 +86,7 @@ return [
     'auth_logo' => [
         'enabled' => false,
         'img' => [
-            'path' => 'img/itop-logo-square.png',
+            'path' => 'img/portal-itop-logo.png',
             'alt' => 'iTop Logo',
             'class' => '',
             'width' => 50,
@@ -113,7 +113,7 @@ return [
         'enabled' => true,
         'mode' => 'cwrapper',
         'img' => [
-            'path' => 'img/itop-logo-square.png',
+            'path' => 'img/portal-itop-logo.png',
             'alt' => 'AdminLTE Preloader Image',
             'effect' => 'animation__shake',
             'width' => 60,
@@ -260,9 +260,9 @@ return [
     'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
     'login_url' => 'login',
-    'register_url' => 'register',
-    'password_reset_url' => 'password/reset',
-    'password_email_url' => 'password/email',
+    'register_url' => false, //'register',
+    'password_reset_url' => false, //'password/reset',
+    'password_email_url' => false, //'password/email',
     'profile_url' => true,
 
     /*
@@ -339,7 +339,7 @@ return [
                             'url'  => 'administration/listusers',
                         ],
                         [
-                            'text' => 'Create customer users [iTop]',
+                            'text' => 'Create user [iTop]',
                             'icon' => 'fas fa-user-plus',
                             'url'  => 'administration/listitopusers',
                         ],
@@ -412,7 +412,7 @@ return [
         [
             'text' => 'New Request',
             'url' => 'newrequest',
-            'icon_color' => 'primary',
+            'icon_color' => 'warning',
             'icon' => 'fa-regular fa-comment-dots',
         ],
         [

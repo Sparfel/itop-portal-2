@@ -10,5 +10,5 @@ Artisan::command('inspire', function () {
 
 
 //Synchronisation des Organisations et Sites
-app(Schedule::class)->command('ItopOrg:sync', [1])->daily();
-app(Schedule::class)->command('ItopLoc:sync', [1])->daily();
+app(Schedule::class)->command('ItopOrg:sync', [1])->daily('15:10');
+app(Schedule::class)->command('ItopLoc:sync', [1])->daily('15:15');

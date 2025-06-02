@@ -47,7 +47,7 @@ class SynchronizationController extends Controller
 //                \Log::debug($persons);
                 $Object = 'UserLocal';
                 $Afields = array('id','last_name','first_name','email','login','contactid');
-                $where = 'status = "enabled" AND org_id !=1'; //On prend tout le monde sauf Fives (qui est géré par l'AD)
+                $where = 'status = "enabled"';
                 $ItopAccounts = $itopWS->getObjects($Object,$Afields,$where);
                 //Si on a un compte iTop, c'est que la Person est référencée dans iTop
                 //on constitue donc un premier tableau avec les comptes que l'on comparera aux Persons
@@ -90,8 +90,10 @@ class SynchronizationController extends Controller
                         $person->portal_id = $User->id;
 
                     }
+
                     //On vérifie ensuite si la personne a un compte iTop.
                     if (isset($AItopAccount[$person->itop_id])) {
+
                         //Ok, on a un compte iTop avec ce login, on complète alors la fiche
                         $person->has_itop_account = 1;
                         //on supprime l'élément du tableau

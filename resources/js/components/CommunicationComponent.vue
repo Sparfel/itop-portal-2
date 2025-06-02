@@ -74,7 +74,9 @@ export default {
 
         const fetchCommunications = async () => {
             try {
-                const response = await axios.get(process.env.MIX_API_URL+'/getcommunications');
+                // const response = await axios.get(process.env.APP_URL+'/getcommunications');
+                const response = await axios.get('/getcommunications');
+                // const response = await axios.get(process.env.MIX_API_URL+'/getcommunications');
                 rows.value = response.data;
             } catch (error) {
                 console.error("Failed to fetch communications:", error);
