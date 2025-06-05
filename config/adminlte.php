@@ -311,25 +311,20 @@ return [
                             [
                                 'text' => 'Roles',
                                 'url' => '/administration/roles', //https://github.com/ihtisham467/laravel-permission-editor
-            //                    'url' => '/administration/listroles', //https://github.com/ihtisham467/laravel-permission-editor
-            //                    'url' => 'permission-editor/roles', //https://github.com/ihtisham467/laravel-permission-editor
                                 'icon' => 'fa-solid fa-shield-halved',
-                                //'can'  => 'permissions',
-            //                    'can'  => 'browse_admin',
+                                'can'  => 'permissions',
+
                             ],
                             [
                                 'text' => 'Permissions',
                                 'url' => 'administration/permissions', //https://github.com/ihtisham467/laravel-permission-editor
-            //                    'url' => 'permission-editor/permissions', //https://github.com/ihtisham467/laravel-permission-editor
                                 'icon' => 'fas fa-fw fa-lock',
-            //                    'can'  => 'browse_admin',
-                                //'can'  => 'permissions',
+                                'can'  => 'browse_admin',
                             ],
                         ],
                     ],
                     [
                     'text'    => 'Accounts',
-//                    'url'  => 'admin',
                     'icon' => 'fas fa-users-cog',
                     //'can'  => 'browse_admin',
                     'submenu' => [
@@ -343,16 +338,10 @@ return [
                             'icon' => 'fas fa-user-plus',
                             'url'  => 'administration/listitopusers',
                         ],
-//                        [
-//                            'text' => 'Create Fives users [AD]',
-//                            'icon' => 'fas fa-user-friends',
-//                            'url'  => 'administration/adusers',
-//                        ],
                     ],
                 ],
                 [
                     'text'    => 'Synchronizing',
-//                    'url'  => 'admin',
                     'icon' => 'fa-solid fa-group-arrows-rotate',
                     //'can'  => 'browse_admin',
                     'submenu' => [
@@ -425,14 +414,6 @@ return [
             'url' => 'closedrequest',
             'icon' => 'fa-regular fa-rectangle-list',
         ],
-
-//        ['header' => 'MISCELLIANOUS'],
-//        [
-//            'text' => 'Test',
-//            'url' => 'test',
-//            'icon' => 'fa-solid fa-vial',
-//            'icon_color' => 'success',
-//        ],
 
     ],
 
