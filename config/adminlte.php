@@ -314,7 +314,7 @@ return [
             //                    'url' => '/administration/listroles', //https://github.com/ihtisham467/laravel-permission-editor
             //                    'url' => 'permission-editor/roles', //https://github.com/ihtisham467/laravel-permission-editor
                                 'icon' => 'fa-solid fa-shield-halved',
-                                'can'  => 'permissions',
+                                //'can'  => 'permissions',
             //                    'can'  => 'browse_admin',
                             ],
                             [
@@ -323,7 +323,7 @@ return [
             //                    'url' => 'permission-editor/permissions', //https://github.com/ihtisham467/laravel-permission-editor
                                 'icon' => 'fas fa-fw fa-lock',
             //                    'can'  => 'browse_admin',
-                                'can'  => 'permissions',
+                                //'can'  => 'permissions',
                             ],
                         ],
                     ],

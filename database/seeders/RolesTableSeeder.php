@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use TCG\Voyager\Models\Role;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 
 class RolesTableSeeder extends Seeder
 {
@@ -12,18 +13,31 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-        $role = Role::firstOrNew(['name' => 'admin']);
-        if (!$role->exists) {
-            $role->fill([
-                'display_name' => 'Administrator',
-            ])->save();
-        }
+        // Désactiver temporairement les timestamps automatiques
+        Role::unguard();
 
-        $role = Role::firstOrNew(['name' => 'user']);
-        if (!$role->exists) {
-            $role->fill([
-                'display_name' => 'User',
-            ])->save();
-        }
+        // Insérer ou mettre à jour les rôles
+        DB::table('roles')->updateOrInsert(
+            ['id' => 1],
+            [
+                'name' => 'Administrator',
+                'guard_name' => 'web',
+                'created_at' => null,
+                'updated_at' => null,
+            ]
+        );
+
+        DB::table('roles')->updateOrInsert(
+            ['id' => 2],
+            [
+                'name' => 'User',
+                'guard_name' => 'web',
+                'created_at' => null,
+                'updated_at' => null,
+            ]
+        );
+
+        // Réactiver les timestamps automatiques
+        Role::reguard();
     }
 }
