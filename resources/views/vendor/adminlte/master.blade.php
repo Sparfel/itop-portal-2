@@ -99,7 +99,8 @@
         <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
         <script src="{{ mix(config('adminlte.laravel_mix_js_path', 'js/app.js')) }}"></script>
-        <script src="{{ mix('js/adminlte.js') }}"></script>
+{{--        <script src="{{ mix('js/adminlte.js') }}"></script>--}}
+        <script src="{{ asset('js/AdminLTE.js') }}"></script>
     @endif
 
     {{-- Extra Configured Plugins Scripts --}}
