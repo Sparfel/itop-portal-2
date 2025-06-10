@@ -28,5 +28,5 @@ echo "Retour à la racine et compilation globale (npm run dev)..."
 cd ../../..
 npm run dev
 
-echo "Installation et compilation terminées !"pwxf
+echo "Installation et compilation terminées !"
 
