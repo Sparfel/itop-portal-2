@@ -15,7 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Itop Portal'),
 
-    'version' => env('APP_VERSION', '2.ß'),
+    'version' => env('APP_VERSION', '2.0'),
 
     /*
     |--------------------------------------------------------------------------
