@@ -15,9 +15,9 @@ This project provides a modern, Laravel-based web portal designed to enhance the
 The default iTop user portal, while functional, may not meet the needs of organizations looking for advanced design and extensibility. This custom solution addresses these limitations, providing a more modern and flexible tool to improve client interactions with your IT service management platform.
 
 ## Links
-- **Documentation**: Explore the full setup guide and user manual at [https://portal-doc.hennebont-kerroch.fr/](https://portal-doc.hennebont-kerroch.fr/).
-- **Demo Portal**: Try the iTop Portal live at [https://portal-itop.hennebont-kerroch.fr/](https://portal-itop.hennebont-kerroch.fr/) (credentials: my.email@foo.org/password).
-- **Demo iTop Instance**: Access the iTop Helpdesk backend used in the demo at [https://itop.hennebont-kerroch.fr/](https://itop.hennebont-kerroch.fr/) (credentials: demo/itopDem0$).
+- **Documentation**: Explore the full setup guide and user manual at <a href="https://portal-doc.hennebont-kerroch.fr/" target="_blank">https://portal-doc.hennebont-kerroch.fr/</a>.
+- **Demo Portal**: Try the iTop Portal live at <a href="https://portal-itop.hennebont-kerroch.fr/" target="_blank">https://portal-itop.hennebont-kerroch.fr/</a> (credentials: my.email@foo.org/password).
+- **Demo iTop Instance**: Access the iTop Helpdesk backend used in the demo at <a href="https://itop.hennebont-kerroch.fr/" target="_blank">https://itop.hennebont-kerroch.fr/</a> (credentials: demo/itopDem0$).
 
 ## Installation
 
