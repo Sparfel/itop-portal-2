@@ -36,26 +36,27 @@ The default iTop user portal, while functional, may not meet the needs of organi
    ```bash
     git clone https://github.com/Sparfel/itop-portal-2.git
     cd itop-portal-2
-
+    ```
 2. Install dependencies:
     ```bash
    composer install
    ./setup.sh
-
+    ```
 3. Set up the environment file:
     ```bash
    cp .env.example .env
-
-Update the .env file with your database and iTop API credentials.
+    ```
+    Update the .env file with your database and iTop API credentials.
 
 4. Generate an application key:
     ```bash
     php artisan key:generate
-
+    ```
 5. Run migrations and seeders:
     ```bash
     php artisan migrate --seed
-   
+    ```
 6. Create an admin user from iTop
     ```bash
    php artisan itop:setup-admin --instance=0
+    ```
