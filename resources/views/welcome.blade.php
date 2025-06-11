@@ -166,7 +166,7 @@
         <div class="container">
             <div class="grid">
                 <div class="logo">
-                    <img src="https://portal.debian/img/portal-itop-logo.png" alt="iTop Logo" height="50"/>
+                    <img src="{{asset("/img/portal-itop-logo.png")}}" alt="iTop Portal Logo" height="50"/>
                     <span>iTop <b>Portal</b></span>
                 </div>
                 @if (Route::has('login'))
