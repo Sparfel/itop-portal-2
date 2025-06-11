@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>Portal</b> iTop',
+    'logo' => 'iTop <b>Portal</b>',
     'logo_img' => 'img/portal-itop-logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -257,7 +257,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'dashboard',
+    'dashboard_url' => '/',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => false, //'register',
