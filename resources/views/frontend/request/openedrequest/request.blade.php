@@ -77,23 +77,23 @@
                                 <div class="btn-group">
                                     {{--                                    <button type="button" id="valid" class="btn btn-primary" title=" {{__('Normal mode')}}"> <i class="fas fa-user-tie"></i></button>--}}
 {{--                                    <button type="button" id="expert" class="btn btn-outline-primary" title=" {{__('Expert mode')}}"><i class="fas fa-user-graduate"></i></button>--}}
-                                    @if ($userMode == 'expert')
-                                        <button type="button"
-                                                id="updateMode"
-                                                class="btn btn-outline-primary"
-                                                title=" {{__('Standard mode')}}"
-                                                value="standard">
-                                            <i class="fas fa-user-tie"></i>
-                                        </button>
-                                    @else
-                                        <button type="button"
-                                                id="updateMode"
-                                                class="btn btn-outline-primary"
-                                                title=" {{__('Expert mode')}}"
-                                                value="expert">
-                                            <i class="fas fa-user-graduate"></i>
-                                        </button>
-                                    @endif
+{{--                                    @if ($userMode == 'expert')--}}
+{{--                                        <button type="button"--}}
+{{--                                                id="updateMode"--}}
+{{--                                                class="btn btn-outline-primary"--}}
+{{--                                                title=" {{__('Standard mode')}}"--}}
+{{--                                                value="standard">--}}
+{{--                                            <i class="fas fa-user-tie"></i>--}}
+{{--                                        </button>--}}
+{{--                                    @else--}}
+{{--                                        <button type="button"--}}
+{{--                                                id="updateMode"--}}
+{{--                                                class="btn btn-outline-primary"--}}
+{{--                                                title=" {{__('Expert mode')}}"--}}
+{{--                                                value="expert">--}}
+{{--                                            <i class="fas fa-user-graduate"></i>--}}
+{{--                                        </button>--}}
+{{--                                    @endif--}}
 
                                     @if (isset($Aattach) && count($Aattach)>0)
                                         <button type="button"

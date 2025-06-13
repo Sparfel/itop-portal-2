@@ -298,7 +298,7 @@ return [
         [
             'text' => 'Administration',
             'url'  => 'admin',
-//            'can'  => 'browse_admin',
+            'can'  => 'browse_admin',
             'icon' => 'fas fa-cogs',
             'topnav' => true,
             'submenu' => [
@@ -306,7 +306,7 @@ return [
                     'text'    => 'Permissions',
 //                    'url'  => 'admin',
                     'icon' => 'fa-solid fa-key',
-                    //'can'  => 'browse_admin',
+                    'can'  => 'browse_admin',
                     'submenu' => [
                             [
                                 'text' => 'Roles',
@@ -326,7 +326,7 @@ return [
                     [
                     'text'    => 'Accounts',
                     'icon' => 'fas fa-users-cog',
-                    //'can'  => 'browse_admin',
+                    'can'  => 'browse_admin',
                     'submenu' => [
                         [
                             'text' => 'Portal users',
@@ -343,7 +343,7 @@ return [
                 [
                     'text'    => 'Synchronizing',
                     'icon' => 'fa-solid fa-group-arrows-rotate',
-                    //'can'  => 'browse_admin',
+                    'can'  => 'browse_admin',
                     'submenu' => [
                         [
                             'text' => 'Organizations',
