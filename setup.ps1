@@ -1,31 +1,64 @@
-# setup.ps1
+# Mode par défaut : dev
+$mode = "dev"
+if ($args.Count -gt 0) {
+    if ($args[0] -eq "--prod") {
+        $mode = "prod"
+    }
+}
 
-Write-Host "Nettoyage des anciens dossiers node_modules et fichiers compilés..."
-Remove-Item -Recurse -Force "node_modules" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "resources/vendor/admin-lte/node_modules" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "public/js", "public/css" -ErrorAction SilentlyContinue
+Write-Host "🔧 Setup Laravel project in '$mode' mode..."
 
-Write-Host "Installation des dépendances à la racine..."
+# Nettoyage
+Write-Host "🧹 Nettoyage des anciens dossiers..."
+Remove-Item -Recurse -Force node_modules, public\js, public\css
+Remove-Item -Recurse -Force resources\vendor\admin-lte\node_modules
+
+# Composer
+Write-Host "📦 Installation des dépendances PHP avec Composer..."
+if ($mode -eq "prod") {
+    composer install --no-dev --optimize-autoloader
+} else {
+    composer install
+}
+
+# npm (racine)
+Write-Host "📦 Installation des dépendances JS à la racine..."
 npm install
-Write-Host "Exécution de npm audit fix à la racine..."
 npm audit fix
 
-Write-Host "Installation des dépendances dans resources/vendor/admin-lte..."
-Set-Location "resources/vendor/admin-lte"
-npm install
-Write-Host "Exécution de npm audit fix pour AdminLTE..."
-npm audit fix
+# Compilation
+if ($mode -eq "prod") {
+    Write-Host "⚙️ Compilation des assets en mode production..."
+    npm run production
+} else {
+    Write-Host "⚙️ Compilation des assets en mode développement..."
+    npm run dev
+}
 
-Write-Host "Compilation des assets AdminLTE (npm run production)..."
+# AdminLTE
+Write-Host "📁 Installation des dépendances pour AdminLTE..."
+Set-Location resources\vendor\admin-lte
+npm install
+npm audit fix
 npm run production
+Set-Location ..\..\..
 
-Write-Host "Retour à la racine du projet..."
-Set-Location "..\..\.."
-
-Write-Host "Compilation globale (npm run dev)..."
-npm run dev
-
-Write-Host "Création du lien symbolique Laravel (php artisan storage:link)..."
+# Lien symbolique
+Write-Host "🔗 Création du lien symbolique Laravel..."
 php artisan storage:link
 
-Write-Host "✅ Installation et compilation terminées !"
+# Migration + seed
+if ($mode -eq "prod") {
+    Write-Host "🗄️ Migration de la base de données (prod)..."
+    php artisan migrate --force
+
+    Write-Host "🌱 Seeders de configuration (prod)..."
+    php artisan db:seed --class=RolesTableSeeder --force
+    php artisan db:seed --class=PermissionsTableSeeder --force
+    php artisan db:seed --class=RoleHasPermissionsTableSeeder --force
+} else {
+    Write-Host "🗄️ Migration + seed complet (dev)..."
+    php artisan migrate --seed
+}
+
+Write-Host "✅ Setup terminé en mode '$mode'."
