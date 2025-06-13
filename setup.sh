@@ -30,6 +30,14 @@ echo "📦 Installation des dépendances JS à la racine..."
 npm install
 npm audit fix
 
+# AdminLTE
+echo "📁 Installation des dépendances pour AdminLTE..."
+cd resources/vendor/admin-lte
+npm install
+npm audit fix
+npm run production
+cd ../../..
+
 # Compilation des assets selon le mode
 if [[ "$MODE" == "prod" ]]; then
   echo "⚙️ Compilation des assets en mode production..."
@@ -38,14 +46,6 @@ else
   echo "⚙️ Compilation des assets en mode développement..."
   npm run dev
 fi
-
-# AdminLTE
-echo "📁 Installation des dépendances pour AdminLTE..."
-cd resources/vendor/admin-lte
-npm install
-npm audit fix
-npm run production
-cd ../../..
 
 # Lien vers /storage
 echo "🔗 Création du lien symbolique Laravel..."

@@ -10,6 +10,8 @@
         "dragon-code/support": "^6.3",
         "ihtisham467/laravel-permission-editor": "^0.0.4",
         "jeroennoten/laravel-adminlte": "^3.12",
+        "laravel-lang/config": "^1.14",
+        "laravel-lang/locale-list": "^1.5",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
