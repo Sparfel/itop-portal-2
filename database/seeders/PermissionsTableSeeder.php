@@ -87,7 +87,7 @@ class PermissionsTableSeeder extends Seeder
         );
 
         DB::table('permissions')->updateOrInsert(
-            ['id' => 11],
+            ['id' => 12],
             [
                 'name' => 'browse_admin',
                 'guard_name' => 'web',
@@ -95,7 +95,7 @@ class PermissionsTableSeeder extends Seeder
         );
 
         DB::table('permissions')->updateOrInsert(
-            ['id' => 12],
+            ['id' => 13],
             [
                 'name' => 'logs',
                 'guard_name' => 'web',
