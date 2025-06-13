@@ -28,5 +28,9 @@ echo "Retour à la racine et compilation globale (npm run dev)..."
 cd ../../..
 npm run dev
 
+# Création du lien symbolique Laravel
+echo "Création du lien symbolique de storage vers public..."
+php artisan storage:link
+
 echo "Installation et compilation terminées !"
 
