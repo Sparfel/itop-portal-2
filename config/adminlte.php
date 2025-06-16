@@ -303,6 +303,13 @@ return [
             'topnav' => true,
             'submenu' => [
                 [
+                    'text'    => 'Logs',
+                    'icon'    => 'far fa-compass  text-info',
+                    'url'  => '/logs',
+                    'target' => '_blank',
+                    'can' => 'logs'
+                ],
+                [
                     'text'    => 'Permissions',
 //                    'url'  => 'admin',
                     'icon' => 'fa-solid fa-key',
@@ -388,13 +395,7 @@ return [
 //            'label' => 4,
 //            'label_color' => 'success',
         ],
-        [
-            'text'    => 'Logs',
-            'icon'    => 'far fa-compass  text-info',
-            'url'  => '/logs',
-            'target' => '_blank',
-            'can' => 'logs'
-        ],
+
 
 
         ['header' => 'USER REQUEST'],
