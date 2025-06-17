@@ -60,3 +60,8 @@ The default iTop user portal, while functional, may not meet the needs of organi
     ```bash
    php artisan itop:setup-admin --instance=0
     ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).  
+It uses [AdminLTE](https://github.com/ColorlibHQ/AdminLTE), also under the MIT License. See [LICENSE-AdminLTE.txt](LICENSE-AdminLTE.txt) for details.
