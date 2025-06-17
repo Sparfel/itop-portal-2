@@ -26,6 +26,7 @@ The default iTop user portal, while functional, may not meet the needs of organi
 - Laravel 10 or higher
 - A running instance of iTop with REST API enabled
 - MySQL or compatible database
+- Node and Composer
 
 ### Steps
 1. Clone the repository:
