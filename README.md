@@ -18,10 +18,6 @@ The default iTop user portal, while functional, may not meet the needs of organi
 - **Documentation**: Explore the full setup guide and user manual at [https://portal-doc.hennebont-kerroch.fr/](https://portal-doc.hennebont-kerroch.fr/).
 - **Demo Portal**: Try the iTop Portal live at [https://portal-itop.hennebont-kerroch.fr/](https://portal-itop.hennebont-kerroch.fr/) (credentials: my.email@foo.org/password).
 - **Demo iTop Instance**: Access the iTop Helpdesk backend used in the demo at [https://itop.hennebont-kerroch.fr/](https://itop.hennebont-kerroch.fr/) (credentials: demo/itopDem0$).
-- ## Links
-- **Documentation**: Explore the full setup guide and user manual at <a href="https://portal-doc.hennebont-kerroch.fr/" target="_blank">https://portal-doc.hennebont-kerroch.fr/</a>.
-- **Demo Portal**: Try the iTop Portal live at <a href="https://portal.debian-project.com/" target="_blank">https://portal.debian-project.com/</a> (credentials: demo/demo).
-- **Demo iTop Instance**: Access the iTop Helpdesk backend used in the demo at <a href="https://itop.debian-project.com/" target="_blank">https://itop.debian-project.com/</a> (credentials: demo/demo).
 
 ## Installation
 
@@ -46,7 +42,7 @@ The default iTop user portal, while functional, may not meet the needs of organi
     ```bash
    cp .env.example .env
     ```
-    Update the .env file with your database and iTop API credentials.
+    Update the .env file with your database and iTop API credentials. See documentation at [https://portal-doc.hennebont-kerroch.fr/](https://portal-doc.hennebont-kerroch.fr/)
 
 4. Generate an application key:
     ```bash
