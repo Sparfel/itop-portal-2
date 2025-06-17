@@ -60,7 +60,7 @@ export default {
     props: {
         themeColor: {
             type: String,
-            default: '#EA7D1E', // Valeur par défaut
+            default: '#28b4e6', // Valeur par défaut
         }
     },
    setup() {
