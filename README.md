@@ -16,8 +16,8 @@ The default iTop user portal, while functional, may not meet the needs of organi
 
 ## Links
 - **Documentation**: Explore the full setup guide and user manual at [https://portal-doc.hennebont-kerroch.fr/](https://portal-doc.hennebont-kerroch.fr/).
-- **Demo Portal**: Try the iTop Portal live at [https://portal-itop.hennebont-kerroch.fr/](https://portal-itop.hennebont-kerroch.fr/) (credentials: my.email@foo.org/password).
-- **Demo iTop Instance**: Access the iTop Helpdesk backend used in the demo at [https://itop.hennebont-kerroch.fr/](https://itop.hennebont-kerroch.fr/) (credentials: demo/itopDem0$).
+- **Demo Portal**: Try the iTop Portal live at [https://portal-itop.hennebont-kerroch.fr/](https://portal-itop.hennebont-kerroch.fr/) (credentials: pablo.picasso@demo.com/Pa$$w0rd and my.email@foo.org/password).
+- **Demo iTop Instance**: Access the iTop Helpdesk backend used in the demo at [https://itop.hennebont-kerroch.fr/](https://itop.hennebont-kerroch.fr/) (credentials: demo/Pa$$w0rd).
 
 ## Installation
 
